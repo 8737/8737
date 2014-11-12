@@ -19,3 +19,19 @@
 * **Local master** on your machine (in a hidden folder under *8737*)
 * **Working copy** of the master in *8737* folder that you can change - but *NOT RECOMMENDED*
 
+## Create a code branch
+Branches are used to develop new features (or fix bugs) isolated from each other. The master branch is the default branch when you create a repository. Create other branches to add or change codes without affecting master codes. We will merge branches back to the master branch after code review and testing.
+
+1. Open **Git Shell** for Windows, or **Terminal** for Mac
+2. Go to your local repository. For example, if you have *C:\FTC* on Windows, type `cd C:\FTC\8737`
+3. Make sure you are in the master. Type `git status` and you should see *On branch master*
+4. If not, type `git checkout master`
+5. Create a branch off the master. Name this branch something meaningful and prefix with your name. For example, type `git checkout -b BennettAutoFromCenter` and now we just created a branch called *BennettAutoFromCenter* and switched to this branch
+
+**NOTE:** You just added a *local BennettAutoFromCenter branch* which is actually a clone of master to start with. The *working copy* is now matching the branch. 
+
+**NOTE:** The *working copy* is always in the *8737* folder. You may create many branches, but there is only one working folder. You switch between master and branches. The *8737* folder is always matching your current branch. To list all local branches, you can type
+```
+git branch
+```
+Your current branch has a star next to it.
