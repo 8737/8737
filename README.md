@@ -76,3 +76,11 @@ If you think your code looks great and wish the team to **merge** it to the mast
 
 **NOTE:** If you find problems after making a pull request, but before your teammate merge the code, you can still fix your code, commit to local branch, and push to remote branch. These changes will be included in the pull request.
 
+## Test codes in a remote branch:
+Your teammate has worked hard and he/she would like you to help test the code. Or when you are reviewing a pull request and you want to (and mostly should) test the code first, do the following.
+
+1. Open **Git Shell** for Windows, or **Terminal** for Mac
+2. Go to your local repository. For example, if you have *C:\FTC* on Windows, type `cd C:\FTC\8737`
+3. To switch to a code branch, for example, BennettAutoFromCenter, type `git checkout BennettAutoFromCenter`. This will create a *local branch BennettAutoFromCenter* on your machine if your don't have it before.
+4. If you had the branch before, you may not have the latest code. Type `git pull` so your working folder *8737* and your local branch are sync'd with the *remote branch BennettAutoFromCenter*
+5. Now run RobotC with codes in *8737* folder
