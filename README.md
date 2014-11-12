@@ -1,4 +1,4 @@
-## Installation and Account
+## Installation and create account
 1. Sign up an account on http://github.com
 2. Go to https://help.github.com/articles/set-up-git/ and follow *Setting up Git*
   1. Download and install git
@@ -35,3 +35,23 @@ Branches are used to develop new features (or fix bugs) isolated from each other
 git branch
 ```
 Your current branch has a star next to it.
+
+## Add/Change/Commit codes:
+You can modify code in any files and you can add files as needed just like how you normally work. Whenever you think it is a good time to take a snapshot of your code, you can perform the following steps. We call each snapshot a **commit**. In general, you want to commit your code changes whenever you fix a bug, add a small feature or make any meaningful progress. It is easier for other people to review code changes if a commit is short and has a clear purpose.
+
+1. Open **Git Shell** for Windows, or **Terminal** for Mac
+2. Go to your local repository. For example, if you have *C:\FTC* on Windows, type `cd C:\FTC\8737`
+3. Type `git status` and you will see files that has been modified and also new (untracked) files
+4. Type `git diff` and you will see what code has been added or removed for *existing files*. New files are not shown with this command.
+5. To see the modification of one particular file, for example, *robotMain.c*, type `git diff robotMain.c`
+6. It’s always a good idea to review the code yourself one more time to make sure all changes are what you want.
+7. To include all modified and new files to the next commit, type `git add .`. The period represents current folder.
+8. To add files individually, for example, *robotMain.c*, type `git add robotMain.c`
+9. Type `git status` again and you will see file names in *green*, which indicates that code changes in these files will be committed. If you read any other tutorials, people say that these *green* files are **staged** for **commit**.
+10: To commit the code changes, type `git commit -m “Cap the max motor value”`. The message between quotes should summarize your code changes. 
+11. Rinse and repeat. Work on your next goal to complete a task, modify codes or add files. Repeat 1 - 10.
+ 
+
+**NOTE:** Remember that before you *commit* your code changes, these changes are in your *working copy* only. It is not even saved in your *local branch*, let alone the *local master* or *remote master*. After the commit, your changes are now saved in your *local branch*.
+
+**TIP:**  For some reason, you want to revert all your changes and start over from your previous commit, you can type `git checkout .`. All of your changes so far will be gone! Make sure you really want to do so.
