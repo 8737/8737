@@ -36,7 +36,7 @@ git branch
 ```
 Your current branch has a star next to it.
 
-## Add/Change/Commit codes:
+## Add/Change/Commit codes
 You can modify code in any files and you can add files as needed just like how you normally work. Whenever you think it is a good time to take a snapshot of your code, you can perform the following steps. We call each snapshot a **commit**. In general, you want to commit your code changes whenever you fix a bug, add a small feature or make any meaningful progress. It is easier for other people to review code changes if a commit is short and has a clear purpose.
 
 1. Open **Git Shell** for Windows, or **Terminal** for Mac
@@ -50,8 +50,29 @@ You can modify code in any files and you can add files as needed just like how y
 9. Type `git status` again and you will see file names in *green*, which indicates that code changes in these files will be committed. If you read any other tutorials, people say that these *green* files are **staged** for **commit**.
 10: To commit the code changes, type `git commit -m “Cap the max motor value”`. The message between quotes should summarize your code changes. 
 11. Rinse and repeat. Work on your next goal to complete a task, modify codes or add files. Repeat 1 - 10.
- 
 
 **NOTE:** Remember that before you *commit* your code changes, these changes are in your *working copy* only. It is not even saved in your *local branch*, let alone the *local master* or *remote master*. After the commit, your changes are now saved in your *local branch*.
 
 **TIP:**  For some reason, you want to revert all your changes and start over from your previous commit, you can type `git checkout .`. All of your changes so far will be gone! Make sure you really want to do so.
+
+## Push codes
+You have worked hard and tested your autonomous drive from the center parking zone. Now you want to **push** your code to the *remote branch* on GitHub to share with the team so your teammates can review and help test your codes.
+
+1. Open **Git Shell** for Windows, or **Terminal** for Mac
+2. Go to your local repository. For example, if you have *C:\FTC* on Windows, type `cd C:\FTC\8737`
+3. Make sure you are in the branch that you want to push. Type `git status` and you should see a message like *On branch BennettAutoFromCenter* where *BennettAutoFromCenter* is the branch in our example. If not, type `git checkout BennettAutoFromCenter` to switch to *BennettAutoFromCenter* branch.
+4. To push codes, type `git push origin BennettAutoFromCenter`
+5. Now, go to https://github.com/8737/8737 and you will see your branch if you click on branches. You can select your branch from the dropdown menu and click commits and you will see all your commits for the branch there. Select any commit and you will see exact code changes. GitHub uses green color to highlight new codes and red color to highlight old codes.
+
+## Pull Request
+If you think your code looks great and wish the team to **merge** it to the master, you should make a **pull request** - to request a teammate review your code and **pull** your code into the master code. To make a pull request, do the following.
+
+1. Go to https://github.com/8737/8737
+2. If you just *pushed* code to your *remote branch*, you should see a *pull request* button on top of our GitHub repository page.
+3. If not, select your branch from the dropdown menu, and you will see the *pull request* button too.
+4. Click the *pull request* button and add a message to summarize your code changes for this pull request.
+
+**NOTE:** It's usually a good idea to skim over your code change one more time. If you find problems, fix your code, commit to local branch, push to remote branch, and then make the pull request.
+
+**NOTE:** If you find problems after making a pull request, but before your teammate merge the code, you can still fix your code, commit to local branch, and push to remote branch. These changes will be included in the pull request.
+
