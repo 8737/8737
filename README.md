@@ -68,8 +68,8 @@ You have worked hard and tested your autonomous drive from the center parking zo
 If you think your code looks great and wish the team to **merge** it to the master, you should make a **pull request** - to request a teammate review your code and **pull** your code into the master code. To make a pull request, do the following.
 
 1. Go to https://github.com/8737/8737
-2. If you just *pushed* code to your *remote branch*, you should see a *pull request* button on top of our GitHub repository page.
-3. If not, select your branch from the dropdown menu, and you will see the *pull request* button too.
+2. If you just *pushed* code to your *remote branch*, you should see an obvious *pull request* button on top of our GitHub repository page.
+3. If not, select your branch from the dropdown menu, and you will see the not-so-obvious grayish *pull request* button too.
 4. Click the *pull request* button and add a message to summarize your code changes for this pull request.
 
 **NOTE:** It's usually a good idea to skim over your code change one more time. If you find problems, fix your code, commit to local branch, push to remote branch, and then make the pull request.
