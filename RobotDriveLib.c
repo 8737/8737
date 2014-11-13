@@ -8,6 +8,9 @@
 #define ROTATE_RIGHT 4
 #define ROTATE_LEFT 5
 #define CONTROL_LIFT 6
+#define SCORE_SERVO 7
+#define FOREBAR_LINK 8
+#define TOW_SERVO 9
 
 #define MAX_SPEED 75 // speed limit to protect the motors
 #define LIFT30CM 1
@@ -15,7 +18,7 @@
 #define LIFT90CM 3
 #define LIFT120CM 4
 #define LIFTDOWN 0
-
+// TASK: figure out min-max open-close degrees
 // Create struct to hold sensor data
 tHTGYRO gyroSensor;
 
@@ -110,13 +113,9 @@ void LiftDown()
 	Lift(0);
 }
 
-void ScoreOpenClose()
+void ScoreOpenClose(int Degrees)
 {
-	int delay=1000;
-	servo[servo1]=100;
-	wait1Msec(delay);
-	servo[servo1]=-100;
-	wait1Msec(delay);
+	servo[up]=Degrees;
 }
 
 void InchDrive(int Action, int DriveXin)
@@ -203,7 +202,7 @@ void gTurn(int Action, int Degrees)
 {
 	float heading = 0;// current heading of gyro
 	int offset = 12;
-	if(Degrees > 45) Degrees - offset;
+	if(Degrees > 45) Degrees -= offset;
 	while (abs(heading) < abs(Degrees))// while current heading is < targetHeading
 	{
 		readSensor(&gyroSensor);// get current rate of rotation
@@ -276,6 +275,7 @@ void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
 		while(bSoundActive) sleep(1);
 		playSound(soundBlip);
 		while(bSoundActive) sleep(1);
+		switch(LiftAction)
 		{
 		case LIFT30CM:
 			Lift30cm();
@@ -299,8 +299,14 @@ void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
 		while(bSoundActive) sleep(1);
 		playSound(soundBlip);
 		while(bSoundActive) sleep(1);
+	case SCORE_SERVO:
+		ScoreOpenClose(Degrees);
+	case FOREBAR_LINK:
+		motor[forebarlink] = Degrees;
+	case TOW_SERVO:
+		motor[Tow] = Degrees;
 	default:
-		Action = 0;
+		break;
 	}
 }
 //autonomous function
