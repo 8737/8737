@@ -13,7 +13,7 @@
 #pragma config(Servo,  srvo_S2_C1_4,    servo4,               tServoNone)
 #pragma config(Servo,  srvo_S2_C1_5,    servo5,               tServoNone)
 #pragma config(Servo,  srvo_S2_C1_6,    Tow,                  tServoStandard)
-#include "Autonomous_Library.c"
+#include "AutoLib.c"
 task main()
 {
 	servo[Tow]=90;

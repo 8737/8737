@@ -35,92 +35,18 @@
 \*---------------------------------------------------------------------------------------------------4246-*/
 
 #include "JoystickDriver.c"
-#include "Robot_Drive.c"
-//StopDrive() this stops the robot
-//Drive(int) 100 to -100
-//Strafe(int) 100 to -100
-//Turn ()
-
+#include "RobotMainLib.c"
 
 task main()
 {
-	/*DriveBackForward(25);
-	wait1Msec(4600);
-	DriveStop();*/
-	StartTask(Drive);
-	StartTask(Lift);
-	StartTask(ScoreOpenClose);
-	StartTask(Forebar);
-	StartTask(TowMech);
+	startTask(Drive);
+	startTask(Lift);
+	startTask(ScoreOpenClose);
+	startTask(Forebar);
+	startTask(TowMech);
 	wait1Msec(120000);
-	/*DriveStop()
-	motor[LiftA]=0;
-	motor[LiftB]=0;*/
 	while(true)
 	{
 		getJoystickSettings(joystick);
 	}
-	//ScoreOpenClose();
-              // Int 'threshold' will allow us to ignore low
-                       // readings that keep our robot in perpetual motion.
-
-  /*int J1_X1 = 0; //Strafe
-  int J1_Y1 = 0; //forward / back
-  int J1_X2 = 0; //rotate*/
-    /*your code here
-    joystick.joy1_y1 = left stick (- is forward, + is backword)
-    joystick.joy1_y2 = right stick (rotate left and right) rt = right / lt = left
-    joystick.joy1_x1 = left stick negitive (Strafe) - is left + is right
-    joystick.joy1_x2 = right stick (not in use)
-
-
-    if(abs(joystick.joy1_y2) > threshold)   // If the right analog stick's Y-axis readings are either above or below the threshold:
-    {
-      J1_Y2 = map(joystick.joy1_y2,-128,127,-100,100); // maps the high and low to a diffrent high to low.
-      DriveTurn(J1_Y2);
-
-
-    }
-    else                                    // Else if the readings are within the threshold:
-    {
-      StopDrive();                        // Motor D is stopped with a power level of 0.
-    }
-
-    Drive();*/
-
-    /*
-    if(abs(joystick.joy1_y2) > threshold)   // If the right analog stick's Y-axis readings are either above or below the threshold:
-    {
-      motor[motorD] = joystick.joy1_y2;         // Motor D is assigned a power level equal to the right analog stick's Y-axis reading.
-    }
-    else                                    // Else if the readings are within the threshold:
-    {
-      motor[motorD] = 0;                        // Motor D is stopped with a power level of 0.
-    }
-
-
-    if(abs(joystick.joy1_y1) > threshold)   // If the left analog stick's Y-axis readings are either above or below the threshold:
-    {
-      motor[motorE] = joystick.joy1_y1;         // Motor E is assigned a power level equal to the left analog stick's Y-axis reading.
-    }
-    else                                    // Else if the readings are within the threshold:
-    {
-      motor[motorE] = 0;                        // Motor E is stopped with a power level of 0.
-    }
-
-
-    // BUTTONS TO CONTOL SERVO ARM
-    // Control arm via shoulder buttons, 5 and 6... 5=up, 6=down
-
-    if(joy1Btn(5))          // If Button 5 is pressed:
-    {
-      servo[servo1] = 200;      // Raise Servo 1 to position 200.
-    }
-
-    if(joy1Btn(6))          // If Button 6 is pressed:
-    {
-      servo[servo1] = 20;       // Lower Servo 1 to position 20.
-    }*/
-
-  //}
 }
