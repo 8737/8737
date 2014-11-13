@@ -1,0 +1,309 @@
+//#include "C:\Program Files\Robomatter Inc\ROBOTC Development Environment 4.X\Sample Programs\NXT\3rd Party Driver Library\include\hitechnic-gyro.h"
+#include "C:\Program Files (x86)\Robomatter Inc\ROBOTC Development Environment 4.X\Sample Programs\NXT\3rd Party Driver Library\include\hitechnic-gyro.h"
+
+#define DRIVE_FORWARD 0
+#define DRIVE_BACK 1
+#define STRAFE_RIGHT 2
+#define STRAFE_LEFT 3
+#define ROTATE_RIGHT 4
+#define ROTATE_LEFT 5
+#define CONTROL_LIFT 6
+
+#define MAX_SPEED 75 // speed limit to protect the motors
+#define LIFT30CM 1
+#define LIFT60CM 2
+#define LIFT90CM 3
+#define LIFT120CM 4
+#define LIFTDOWN 0
+
+// Create struct to hold sensor data
+tHTGYRO gyroSensor;
+
+void initializeRobot()
+{
+	displayTextLine(0,"Initialising...");
+	nMotorEncoder[LiftA] = 0;
+	servo[up] = 0;
+	servo[forebarlink] = 0;
+	servo[Tow] = 0;
+	initSensor(&gyroSensor, S4);//gyro sensor port is 4
+	sleep(500);
+	sensorCalibrate(&gyroSensor);
+	sleep(1200);
+  return;
+}
+
+void DriveStop()//stop function
+{
+	motor[FrontRight]=0;
+	motor[FrontLeft]=0;
+	motor[BackRight]=0;
+	motor[BackLeft]=0;
+}
+
+void DriveBackForward(int speed)// defines forward function positive is forward negative
+{
+	motor[FrontRight]=speed;
+	motor[FrontLeft]=speed;
+	motor[BackRight]=speed;
+	motor[BackLeft]=speed;
+}
+
+void DriveTurn(int speed)// positive is left turn negative is right turn
+{
+	motor[FrontRight]=speed;
+	motor[FrontLeft]=-speed;
+	motor[BackRight]=speed;
+	motor[BackLeft]=-speed;
+}
+
+void DriveStrafe(int speed)//moves side to side positive is right negative is left
+{
+	motor[FrontRight]=-speed;
+	motor[FrontLeft]=-speed;
+	motor[BackRight]=speed;
+	motor[BackLeft]=speed;
+}
+void Lift(int speed)
+{
+	motor[LiftA]=speed;
+	motor[LiftB]=speed;
+}
+void Lift30cm()
+{
+	while(nMotorEncoder[LiftA] > -6450)
+	{
+		Lift(-25);
+	}
+	Lift(0);
+}
+void Lift60cm()
+{
+	while(nMotorEncoder[LiftA] > -14550)
+	{
+		Lift(-25);
+	}
+	Lift(0);
+}
+void Lift90cm()
+{
+	while(nMotorEncoder[LiftA] > -23050)
+	{
+		Lift(-25);
+	}
+	Lift(0);
+}
+void Lift120cm()
+{
+	while(nMotorEncoder[LiftA] > -30800)
+	{
+		Lift(-25);
+	}
+	Lift(0);
+}
+void LiftDown()
+{
+	while(nMotorEncoder[LiftA] > 0)
+	{
+		Lift(25);
+	}
+	Lift(0);
+}
+
+void ScoreOpenClose()
+{
+	int delay=1000;
+	servo[servo1]=100;
+	wait1Msec(delay);
+	servo[servo1]=-100;
+	wait1Msec(delay);
+}
+
+void InchDrive(int Action, int DriveXin)
+{
+	if(DriveXin < 0) return;
+	int MotorRunTime = 0;
+
+	int Brake1 = 8;
+	float Brake1MS = 88.75;
+
+	int Brake2 = 17;
+	float Brake2MS = 68.89;
+
+	int Brake3 = 25;
+	float Brake3MS = 66.51;
+
+	float Brake4MS = 66.51;
+
+
+	//average	8, 17, 25
+	//MsPerInch	88.75, 68.89, 66.51
+
+	if(DriveXin >= Brake1)
+	{
+		if (DriveXin >= Brake2)
+		{
+			if(DriveXin >= Brake3)
+			{
+				MotorRunTime = Brake1 * Brake1MS;
+				DriveXin -= Brake1;
+				MotorRunTime += (Brake2 - Brake1) * Brake2MS;
+				DriveXin -= (Brake2-Brake1);
+				MotorRunTime += (Brake3 - Brake2) * Brake3MS;
+				DriveXin -= (Brake3 - Brake2);
+				MotorRunTime += DriveXin * Brake4MS;
+			}
+			else
+			{
+				MotorRunTime = Brake1 * Brake1MS;
+				DriveXin -= Brake1;
+				MotorRunTime += (Brake2 - Brake1) * Brake2MS;
+				DriveXin -= (Brake2-Brake1);
+				MotorRunTime += DriveXin * Brake3MS;
+			}
+		}
+		else
+		{
+			MotorRunTime = Brake1 * Brake1MS;
+			DriveXin -= Brake1;
+			MotorRunTime += DriveXin * Brake2MS;
+		}
+	}
+	else
+	{
+		MotorRunTime = DriveXin * Brake1MS;
+	}
+	switch (Action)
+	{
+	case DRIVE_FORWARD:
+		DriveBackForward(25);
+		break;
+	case DRIVE_BACK:
+		DriveBackForward(-25);
+		break;
+	case STRAFE_RIGHT:
+		DriveStrafe(25);
+		break;
+	case STRAFE_LEFT:
+		DriveStrafe(-25);
+		break;
+
+	default:
+		break;
+	}
+	displayTextLine(6,"Delay %d ms",MotorRunTime);
+	writeDebugStreamLine("Delay %d ms",MotorRunTime);
+
+	sleep(MotorRunTime);
+	DriveBackForward(0);
+
+}
+
+void gTurn(int Action, int Degrees)
+{
+	float heading = 0;// current heading of gyro
+	int offset = 12;
+	if(Degrees > 45) Degrees - offset;
+	while (abs(heading) < abs(Degrees))// while current heading is < targetHeading
+	{
+		readSensor(&gyroSensor);// get current rate of rotation
+		float interval = (float)1000 / (float)time1[T1];
+		writeDebugStreamLine ("gyroSensor.rotation:%f ",gyroSensor.rotation);
+		writeDebugStreamLine ("heading:%f ",heading);
+		writeDebugStreamLine ("interval:%f ",interval);
+		writeDebugStreamLine ("Degrees:%d ",Degrees);
+		time1[T1] = 0;// set timer1 to 0
+
+		if(gyroSensor.rotation > 0.75 || gyroSensor.rotation < -0.75)// threshold
+		{
+			heading += gyroSensor.rotation / interval;// sets heading to heading + gyroSensor.rotation / 100
+		}
+		displayTextLine(6, "heading:%f",heading);
+		switch (Action)
+		{
+		case ROTATE_RIGHT:
+			DriveTurn(-25);
+			break;
+		case ROTATE_LEFT:
+			DriveTurn(25);
+			break;
+
+		default:
+			break;
+		}
+		sleep(50);
+	}
+	DriveTurn(0);
+}
+void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
+{
+	switch(Action)
+	{
+	case DRIVE_FORWARD:
+	case DRIVE_BACK:
+	case STRAFE_RIGHT:
+	case STRAFE_LEFT:
+		displayTextLine(5,"Driving");
+		sleep(1500);
+		playSound(soundBlip);
+		while(bSoundActive) sleep(1);
+		playSound(soundBlip);
+		while(bSoundActive) sleep(1);
+		InchDrive(Action,Distance);
+		playSound(soundBlip);
+		while(bSoundActive) sleep(1);
+		playSound(soundBlip);
+		while(bSoundActive) sleep(1);
+		break;
+	case ROTATE_RIGHT:
+	case ROTATE_LEFT:
+		displayTextLine(5,"Turning");
+		sleep(1500);
+		playSound(soundBlip);
+		while(bSoundActive) sleep(1);
+		playSound(soundBlip);
+		while(bSoundActive) sleep(1);
+		gTurn(Action,Degrees);
+		playSound(soundBlip);
+		while(bSoundActive) sleep(1);
+		playSound(soundBlip);
+		while(bSoundActive) sleep(1);
+		break;
+	case CONTROL_LIFT:
+		displayTextLine(5,"Lifting");
+		sleep(1500);
+		playSound(soundBlip);
+		while(bSoundActive) sleep(1);
+		playSound(soundBlip);
+		while(bSoundActive) sleep(1);
+		{
+		case LIFT30CM:
+			Lift30cm();
+			break;
+		case LIFT60CM:
+			Lift60cm();
+			break;
+		case LIFT90CM:
+			Lift90cm();
+			break;
+		case LIFT120CM:
+			Lift120cm();
+			break;
+		case LIFTDOWN:
+			LiftDown();
+			break;
+		default:
+			break;
+		}
+		playSound(soundBlip);
+		while(bSoundActive) sleep(1);
+		playSound(soundBlip);
+		while(bSoundActive) sleep(1);
+	default:
+		Action = 0;
+	}
+}
+//autonomous function
+//it takes two variables
+// First is Action
+// Second is distance/degrees/LiftAction
