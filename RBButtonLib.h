@@ -21,7 +21,7 @@ struct RB_Button_State {
  */
 void RB_Button_Init(RB_Button_State& s)
 {
-	s.old1 = s.old2 = s.pressed = s.released = 0;
+  s.old1 = s.old2 = s.pressed = s.released = 0;
 }
 
 /**
@@ -31,18 +31,18 @@ void RB_Button_Init(RB_Button_State& s)
  */
 void RB_Button_addState(RB_Button_State& s, short newState)
 {
-	// Check if a button is just now transitioning to a 1 from a 0,0.
-	short pressedNow = (newState | ~s.old1 | ~s.old2);
-	// Check if a button is now a 0 and previosly a 0 but oldest was a 1.
-	short releasedNow = (~newState | ~s.old1 | s.old2);
-  hogCPU(); // Deal with possile concurreny issues
-	// Check if a button is just now transitioning to a 1 from a 0,0.
-	s.pressed  |= pressedNow;
-	// Check if a button is now a 0 and previosly a 0 but oldest was a 1.
-	s.released |= releasedNow;
-	// Push state into history
-	s.old2 = s.old1;
-	s.old1 = newState;
+  // Check if a button is just now transitioning to a 1 from a 0,0.
+  short pressedNow = (newState & ~s.old1 & ~s.old2);
+  // Check if a button is now a 0 and previosly a 0 but oldest was a 1.
+  short releasedNow = (~newState & ~s.old1 & s.old2);
+  hogCPU();// Deal with possile concurreny issues
+  // Check if a button is just now transitioning to a 1 from a 0,0.
+  s.pressed  |= pressedNow;
+  // Check if a button is now a 0 and previosly a 0 but oldest was a 1.
+  s.released |= releasedNow;
+  // Push state into history
+  s.old2 = s.old1;
+  s.old1 = newState;
   releaseCPU();
 }
 
@@ -50,46 +50,46 @@ void RB_Button_addState(RB_Button_State& s, short newState)
  * Check Button State has been pressed since last testing of pressed.
  * This is true when first pressed down and does not trigger again unless
  * released and pressed again.
- * Inputs: RB_Button_State & Button # to test 0 to 15
+ * Inputs: RB_Button_State & Button # to test 1 to 16
  * Result true if pressed else false
  */
 bool RB_Button_isHeld(const RB_Button_State& s, byte button)
 {
-	const short mask = (1<<button);
-	return (0 != (s.old1 & mask));
+  const short mask = (1 << (button-1));
+  return (0 != (s.old1 & mask));
 }
 
 /**
  * Check Button State has been pressed since last testing of pressed.
  * This is true when first pressed down and does not trigger again unless
  * released and pressed again.
- * Inputs: RB_Button_State & Button # to test 0 to 15
+ * Inputs: RB_Button_State & Button # to test 1 to 16
  * Result true if pressed else false
  */
 bool RB_Button_wasPressed(RB_Button_State& s, byte button)
 {
-	const short mask = (1<<button);
-	const short temp = s.pressed;
+  const short mask = (1 << (button-1));
+  const short temp = s.pressed;
   hogCPU(); // Deal with possile concurreny issues
   s.pressed &= ~mask; // Clear Pressed flag, if set
   releaseCPU();
-	return (0 != (temp & mask));
+  return (0 != (temp & mask));
 }
 
 /**
  * Check Button State has been released since last testing of released.
  * This is true when finally released and does not trigger again unless
  * pressed and released again.
- * Inputs: RB_Button_State & Button # to test 0 to 15
+ * Inputs: RB_Button_State & Button # to test 1 to 16
  * Result true if released else false
  */
 bool RB_Button_wasReleased(RB_Button_State& s, byte button)
 {
-	const short mask = (1<<button);
-	const short temp = s.released;
+  const short mask = (1 << (button-1));
+  const short temp = s.released;
   hogCPU(); // Deal with possile concurreny issues
-	s.released &= ~mask; // Clear Pressed flag, if set
+  s.released &= ~mask; // Clear Pressed flag, if set
   releaseCPU();
-	return (0 != (temp & mask));
+  return (0 != (temp & mask));
 }
 #endif
