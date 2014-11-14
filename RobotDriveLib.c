@@ -106,7 +106,7 @@ void Lift120cm()
 }
 void LiftDown()
 {
-	while(nMotorEncoder[LiftA] > 0)
+	while(nMotorEncoder[LiftA] < 0)
 	{
 		Lift(25);
 	}
@@ -313,9 +313,9 @@ void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
 	default:
 		break;
 	}
-	writeDebugStreamLine("ScoreOpenClose: %d",servo[up]);
-		writeDebugStreamLine("forebarlink: %d",servo[forebarlink]);
-		writeDebugStreamLine("Tow: %d",servo[Tow]);
+	writeDebugStreamLine("ScoreOpenClose: %d",ServoValue[up]);
+		writeDebugStreamLine("forebarlink: %d",ServoValue[forebarlink]);
+		writeDebugStreamLine("Tow: %d",ServoValue[Tow]);
 }
 //autonomous function
 //it takes two variables
