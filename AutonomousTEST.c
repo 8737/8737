@@ -69,53 +69,55 @@
 
 task main()
 {
-  initializeRobot();
-  sleep(2000);
-
-  // waitForStart(); // Wait for the beginning of autonomous phase.
-  // void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
-  // #define DRIVE_FORWARD 0
-// #define DRIVE_BACK 1
-// #define STRAFE_RIGHT 2
-// #define STRAFE_LEFT 3
-// #define ROTATE_RIGHT 4
-// #define ROTATE_LEFT 5
-// #define CONTROL_LIFT 6
-// #define SCORE_SERVO 7
-// #define FOREBAR_LINK 8
-// #define TOW_SERVO 9
-
-// #define MAX_SPEED 75 // speed limit to protect the motors
-// #define LIFT30CM 1
-// #define LIFT60CM 2
-// #define LIFT90CM 3
-// #define LIFT120CM 4
-// #define LIFTDOWN 0
-AutonomousAction(SCORE_SERVO,0, 100, 0);
-  AutonomousAction(FOREBAR_LINK,0, 100, 0);
-  AutonomousAction(TOW_SERVO,0, 100, 0);
-  sleep(2000);
-  DriveBackForward(25);
-  sleep(1000);
-  DriveTurn(25);
-  sleep(1000);
-  DriveStrafe(25);
-  sleep(1000);
-  DriveStop();
-  sleep(2000);
-  AutonomousAction(DRIVE_FORWARD,0, 0, 12);
-  AutonomousAction(ROTATE_LEFT,0, 90, 0);
-  AutonomousAction(DRIVE_FORWARD,0, 0, 12);
-  AutonomousAction(ROTATE_LEFT,0, 90, 0);
-  AutonomousAction(DRIVE_FORWARD,0, 0, 12);
-  AutonomousAction(ROTATE_LEFT,0, 90, 0);
-  AutonomousAction(DRIVE_FORWARD,0, 0, 12);
-  AutonomousAction(ROTATE_LEFT,0, 90, 0);
+	initializeRobot();
 	sleep(2000);
-  AutonomousAction(SCORE_SERVO,0, 20, 0);
-  AutonomousAction(FOREBAR_LINK,0, 20, 0);
-  AutonomousAction(TOW_SERVO,0, 20, 0);
+	// waitForStart(); // Wait for the beginning of autonomous phase.
+	// void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
+	// #define DRIVE_FORWARD 0
+	// #define DRIVE_BACK 1
+	// #define STRAFE_RIGHT 2
+	// #define STRAFE_LEFT 3
+	// #define ROTATE_RIGHT 4
+	// #define ROTATE_LEFT 5
+	// #define CONTROL_LIFT 6
+	// #define SCORE_SERVO 7
+	// #define FOREBAR_LINK 8
+	// #define TOW_SERVO 9
 
-  while (true)
-  {}
+	// #define MAX_SPEED 75 // speed limit to protect the motors
+	// #define LIFT30CM 1
+	// #define LIFT60CM 2
+	// #define LIFT90CM 3
+	// #define LIFT120CM 4
+	// #define LIFTDOWN 0
+	sleep(2000);
+	servo[up] = -100;//90;
+	//AutonomousAction(SCORE_SERVO,0, 90, 0);
+	//AutonomousAction(FOREBAR_LINK,0, 120, 0);
+	//AutonomousAction(TOW_SERVO,0, 90, 0);
+	//sleep(10000000000);
+	// sleep(2000);
+	// DriveBackForward(25);
+	// sleep(1000);
+	// DriveTurn(25);
+	// sleep(1000);
+	// DriveStrafe(25);
+	// sleep(1000);
+	// DriveStop();
+	// sleep(2000);
+	// AutonomousAction(DRIVE_FORWARD,0, 0, 12);
+	// AutonomousAction(ROTATE_LEFT,0, 90, 0);
+	// AutonomousAction(DRIVE_FORWARD,0, 0, 12);
+	// AutonomousAction(ROTATE_LEFT,0, 90, 0);
+	// AutonomousAction(DRIVE_FORWARD,0, 0, 12);
+	// AutonomousAction(ROTATE_LEFT,0, 90, 0);
+	// AutonomousAction(DRIVE_FORWARD,0, 0, 12);
+	// AutonomousAction(ROTATE_LEFT,0, 90, 0);
+	//sleep(2000);
+	// AutonomousAction(SCORE_SERVO,0, 20, 0);
+	// AutonomousAction(FOREBAR_LINK,0, 20, 0);
+	// AutonomousAction(TOW_SERVO,0, 20, 0);
+
+	//while (true)
+	//{}
 }

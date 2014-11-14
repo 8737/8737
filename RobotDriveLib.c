@@ -33,7 +33,7 @@ void initializeRobot()
 	sleep(500);
 	sensorCalibrate(&gyroSensor);
 	sleep(1200);
-  return;
+	return;
 }
 
 void DriveStop()//stop function
@@ -47,16 +47,16 @@ void DriveStop()//stop function
 void DriveBackForward(int speed)// defines forward function positive is forward negative
 {
 	motor[FrontRight]=speed;
-	motor[FrontLeft]=speed;
+	motor[FrontLeft]=-speed;
 	motor[BackRight]=speed;
-	motor[BackLeft]=speed;
+	motor[BackLeft]=-speed;
 }
 
 void DriveTurn(int speed)// positive is left turn negative is right turn
 {
-	motor[FrontRight]=speed;
+	motor[FrontRight]=-speed;
 	motor[FrontLeft]=-speed;
-	motor[BackRight]=speed;
+	motor[BackRight]=-speed;
 	motor[BackLeft]=-speed;
 }
 
@@ -201,6 +201,7 @@ void InchDrive(int Action, int DriveXin)
 void gTurn(int Action, int Degrees)
 {
 	float heading = 0;// current heading of gyro
+	time1[T1] = 0;
 	int offset = 12;
 	if(Degrees > 45) Degrees -= offset;
 	while (abs(heading) < abs(Degrees))// while current heading is < targetHeading
@@ -221,10 +222,10 @@ void gTurn(int Action, int Degrees)
 		switch (Action)
 		{
 		case ROTATE_RIGHT:
-			DriveTurn(-25);
+			DriveTurn(25);
 			break;
 		case ROTATE_LEFT:
-			DriveTurn(25);
+			DriveTurn(-25);
 			break;
 
 		default:
@@ -236,6 +237,10 @@ void gTurn(int Action, int Degrees)
 }
 void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
 {
+	writeDebugStreamLine("Action: %d",Action);
+	writeDebugStreamLine("LiftAction %d",LiftAction);
+	writeDebugStreamLine("Degrees: %d",Degrees);
+	writeDebugStreamLine("Distance: %d",Distance);
 	switch(Action)
 	{
 	case DRIVE_FORWARD:
@@ -300,14 +305,18 @@ void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
 		playSound(soundBlip);
 		while(bSoundActive) sleep(1);
 	case SCORE_SERVO:
-		ScoreOpenClose(Degrees);
+		servo[up] = Degrees;
 	case FOREBAR_LINK:
-		motor[forebarlink] = Degrees;
+		servo[forebarlink] = Degrees;
+		servo[forebarlink]
 	case TOW_SERVO:
-		motor[Tow] = Degrees;
+		servo[Tow] = Degrees;
 	default:
 		break;
 	}
+	writeDebugStreamLine("ScoreOpenClose: %d",servo[up]);
+		writeDebugStreamLine("forebarlink: %d",servo[forebarlink]);
+		writeDebugStreamLine("Tow: %d",servo[Tow]);
 }
 //autonomous function
 //it takes two variables

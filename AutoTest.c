@@ -50,7 +50,7 @@ task main()
 				displayTextLine(0,"Action:");
 				displayTextLine(1,"StrafeLeft");
 				break;
-			case ROTATE_RIGHT:
+			case ROTATE_RIGHT://not working
 				displayTextLine(0,"Action:");
 				displayTextLine(1,"RotateRight");
 				break;
@@ -92,6 +92,10 @@ task main()
 			sleep(200);
 		}
 		displayTextLine(2,"Action Selected");
+		writeDebugStreamLine("Action: %d",Action);
+		writeDebugStreamLine("LiftAction %d",LiftAction);
+		writeDebugStreamLine("Degrees: %d",Degrees);
+		writeDebugStreamLine("Distance: %d",Distance);
 		sleep (2000);
 		while (nNxtButtonPressed != 3)
 		{
@@ -170,6 +174,10 @@ task main()
 			}
 			sleep(150);
 		}
+		writeDebugStreamLine("Action: %d",Action);
+		writeDebugStreamLine("LiftAction %d",LiftAction);
+		writeDebugStreamLine("Degrees: %d",Degrees);
+		writeDebugStreamLine("Distance: %d",Distance);
 		AutonomousAction(Action,LiftAction,Degrees,Distance);
 		sleep(2000);
 		eraseDisplay();
