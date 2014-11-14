@@ -308,7 +308,6 @@ void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
 		servo[up] = Degrees;
 	case FOREBAR_LINK:
 		servo[forebarlink] = Degrees;
-		servo[forebarlink]
 	case TOW_SERVO:
 		servo[Tow] = Degrees;
 	default:
