@@ -1,4 +1,5 @@
 //#include "C:\Program Files\Robomatter Inc\ROBOTC Development Environment 4.X\Sample Programs\NXT\3rd Party Driver Library\include\hitechnic-gyro.h"
+#include "C:\Program Files (x86)\Robomatter Inc\ROBOTC Development Environment 4.X\Sample Programs\NXT\3rd Party Driver Library\include\hitechnic-sensormux.h"
 #include "C:\Program Files (x86)\Robomatter Inc\ROBOTC Development Environment 4.X\Sample Programs\NXT\3rd Party Driver Library\include\hitechnic-gyro.h"
 
 #define DRIVE_FORWARD 0
@@ -27,7 +28,8 @@
 #define LIFTDOWN 0
 // TASK: figure out min-max open-close degrees
 // Create struct to hold sensor data
-tHTGYRO gyroSensor;
+// tHTGYRO gyroSensor;
+const tMUXSensor HTGYRO = msensor_S3_1;
 
 void initializeRobot()
 {
@@ -36,9 +38,10 @@ void initializeRobot()
 	servo[up] = 0;
 	servo[forebarlink] = 0;
 	servo[Tow] = 0;
-	initSensor(&gyroSensor, S4);//gyro sensor port is 4
-	sleep(500);
-	sensorCalibrate(&gyroSensor);
+	// initSensor(&gyroSensor, S4);//gyro sensor port is 4
+	// sleep(500);
+	// sensorCalibrate(&gyroSensor);
+	HTGYROstartCal(HTGYRO);
 	sleep(1200);
 	return;
 }
@@ -215,20 +218,21 @@ void gTurn(int Action, int Degrees)
 	float heading = 0;// current heading of gyro
 	time1[T1] = 0;
 	int offset = 13;
+	float gRot = HTGYROreadRot(HTGYRO);
 	if(Degrees > 45) Degrees -= offset;
 	while (abs(heading) < abs(Degrees))// while current heading is < targetHeading
 	{
-		readSensor(&gyroSensor);// get current rate of rotation
+		gRot = HTGYROreadRot(HTGYRO);// get current rate of rotation
 		float interval = (float)1000 / (float)time1[T1];
-		writeDebugStreamLine ("gyroSensor.rotation:%f ",gyroSensor.rotation);
+		writeDebugStreamLine ("gRot:%f ",gRot);
 		writeDebugStreamLine ("heading:%f ",heading);
 		writeDebugStreamLine ("interval:%f ",interval);
 		writeDebugStreamLine ("Degrees:%d ",Degrees);
 		time1[T1] = 0;// set timer1 to 0
 
-		if(gyroSensor.rotation > 0.75 || gyroSensor.rotation < -0.75)// threshold
+		if(gRot > 0.6 || gRot < -0.6)// threshold
 		{
-			heading += gyroSensor.rotation / interval;// sets heading to heading + gyroSensor.rotation / 100
+			heading += gRot / interval;// sets heading to heading + gyroSensor.rotation / 100
 		}
 		displayTextLine(6, "heading:%f",heading);
 		switch (Action)
