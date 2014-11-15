@@ -9,8 +9,15 @@
 #define ROTATE_LEFT 5
 #define CONTROL_LIFT 6
 #define SCORE_SERVO 7
+
+#define SCORE_SERVO_MAX_VALUE 90
+#define SCORE_SERVO_MIN_VALUE 0
 #define FOREBAR_LINK 8
+#define FOREBAR_LINK_MAX_VALUE 120
+#define FOREBAR_LINK_MIN_VALUE 0
 #define TOW_SERVO 9
+#define TOW_SERVO_MAX_VALUE 90
+#define TOW_SERVO_MIN_VALUE 0
 
 #define MAX_SPEED 75 // speed limit to protect the motors
 #define LIFT30CM 1
@@ -115,9 +122,14 @@ void LiftDown()
 
 void ScoreOpenClose(int Degrees)
 {
-	servo[up]=Degrees;
+	servo[up] = Degrees;
 }
-
+void ForebarLinkOutIn(int Degrees)
+{
+	servo[forebarlink] = Degrees;
+}
+void TowOnOff(int Degrees)
+{}
 void InchDrive(int Action, int DriveXin)
 {
 	if(DriveXin < 0) return;
@@ -202,7 +214,7 @@ void gTurn(int Action, int Degrees)
 {
 	float heading = 0;// current heading of gyro
 	time1[T1] = 0;
-	int offset = 12;
+	int offset = 13;
 	if(Degrees > 45) Degrees -= offset;
 	while (abs(heading) < abs(Degrees))// while current heading is < targetHeading
 	{
@@ -248,7 +260,6 @@ void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
 	case STRAFE_RIGHT:
 	case STRAFE_LEFT:
 		displayTextLine(5,"Driving");
-		sleep(1500);
 		playSound(soundBlip);
 		while(bSoundActive) sleep(1);
 		playSound(soundBlip);
@@ -262,7 +273,6 @@ void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
 	case ROTATE_RIGHT:
 	case ROTATE_LEFT:
 		displayTextLine(5,"Turning");
-		sleep(1500);
 		playSound(soundBlip);
 		while(bSoundActive) sleep(1);
 		playSound(soundBlip);
@@ -305,6 +315,10 @@ void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
 		playSound(soundBlip);
 		while(bSoundActive) sleep(1);
 	case SCORE_SERVO:
+		while(bSoundActive) sleep(1);
+		playSound(soundBlip);
+		while(bSoundActive) sleep(1);
+		playSound(soundBlip);
 		servo[up] = Degrees;
 	case FOREBAR_LINK:
 		servo[forebarlink] = Degrees;
@@ -314,8 +328,8 @@ void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
 		break;
 	}
 	writeDebugStreamLine("ScoreOpenClose: %d",ServoValue[up]);
-		writeDebugStreamLine("forebarlink: %d",ServoValue[forebarlink]);
-		writeDebugStreamLine("Tow: %d",ServoValue[Tow]);
+	writeDebugStreamLine("forebarlink: %d",ServoValue[forebarlink]);
+	writeDebugStreamLine("Tow: %d",ServoValue[Tow]);
 }
 //autonomous function
 //it takes two variables
