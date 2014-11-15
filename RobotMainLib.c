@@ -4,24 +4,17 @@ task Lift()
 	int J1_Z1 = 0;
 	while (true)
 	{
-
 		J1_Z1 = joystick.joy1_y2;
-		if (J1_Z1>=10 && nMotorEncoder[LiftA]<=30800)
+		if (J1_Z1>=10 && nMotorEncoder[LiftA]>=-30200)
 		{
 			motor[LiftA]=-J1_Z1;
 			motor[LiftB]=-J1_Z1;
 			wait1Msec(100);
 		}
-		else if (J1_Z1 <= -10 && SensorValue(S4) == 0)//&&nMotorEncoder[LiftA]>0)
+		else if (J1_Z1 <= -10 && SensorValue(Touch) == 0)//&&nMotorEncoder[LiftA]>0)
 		{
 			motor[LiftA]=-J1_Z1;
 			motor[LiftB]=-J1_Z1;
-		}
-		else if(SensorValue(S4) == 1)
-		{
-			nMotorEncoder[LiftA] = 0;
-			motor[LiftA]=0;
-			motor[LiftB]=0;
 		}
 		else
 		{

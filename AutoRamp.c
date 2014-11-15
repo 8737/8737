@@ -27,7 +27,7 @@ task main()
 	wait1Msec(90)
 	motor[FrontLeft]=-50;
 	motor[BackLeft]=-50;
-	wait1Msec(2900);
+	wait1Msec(3000);
 	DriveStop()
 	wait1Msec(1200);
 
@@ -65,7 +65,15 @@ task main()
 	motor[BackLeft]=50;
 	wait1Msec(1200);
 	DriveStop();
-
 	servo[Tow]=0;
+	wait1Msec(1000)
 
+	motor[FrontRight]=50;
+	motor[BackRight]=-50;
+	wait1Msec(90)
+	motor[FrontLeft]=50;
+	motor[BackLeft]=-50;
+	wait1Msec(3000);
+	DriveStop()
+	wait1Msec(1200);
 }
