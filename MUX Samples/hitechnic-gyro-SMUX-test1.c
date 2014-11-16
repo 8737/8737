@@ -60,7 +60,7 @@ task main () {
       wait1Msec(500);
 
       // Start the calibration and display the offset
-      nxtDisplayTextLine(2, "Offset: %4d", HTGYROstartCal(HTGYRO));
+      writeDebugStreamLine ("Offset: %4f",HTGYROreadCal(HTGYRO));
       PlaySound(soundBlip);
       while(bSoundActive) EndTimeSlice();
       time1[T1] = 0;

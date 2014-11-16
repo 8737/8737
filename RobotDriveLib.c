@@ -1,6 +1,8 @@
-//#include "C:\Program Files\Robomatter Inc\ROBOTC Development Environment 4.X\Sample Programs\NXT\3rd Party Driver Library\include\hitechnic-gyro.h"
 #include "C:\Program Files (x86)\Robomatter Inc\ROBOTC Development Environment 4.X\Sample Programs\NXT\3rd Party Driver Library\include\hitechnic-sensormux.h"
 #include "C:\Program Files (x86)\Robomatter Inc\ROBOTC Development Environment 4.X\Sample Programs\NXT\3rd Party Driver Library\include\hitechnic-gyro.h"
+#include "C:\Program Files (x86)\Robomatter Inc\ROBOTC Development Environment 4.X\Sample Programs\NXT\3rd Party Driver Library\include\lego-ultrasound.h"
+#include "C:\Program Files (x86)\Robomatter Inc\ROBOTC Development Environment 4.X\Sample Programs\NXT\3rd Party Driver Library\include\hitechnic-irseeker-v2.h"
+#include "C:\Program Files (x86)\Robomatter Inc\ROBOTC Development Environment 4.X\Sample Programs\NXT\3rd Party Driver Library\include\lego-touch.h"
 
 #define DRIVE_FORWARD 0
 #define DRIVE_BACK 1
@@ -10,42 +12,64 @@
 #define ROTATE_LEFT 5
 #define CONTROL_LIFT 6
 #define SCORE_SERVO 7
-
-#define SCORE_SERVO_MAX_VALUE 90
-#define SCORE_SERVO_MIN_VALUE 0
+#define SCORE_SERVO_OPEN 90
+#define SCORE_SERVO_CLOSE 0
 #define FOREBAR_LINK 8
-#define FOREBAR_LINK_MAX_VALUE 120
-#define FOREBAR_LINK_MIN_VALUE 0
+#define FOREBAR_LINK_OUT 0
+#define FOREBAR_LINK_IN 120
 #define TOW_SERVO 9
-#define TOW_SERVO_MAX_VALUE 90
-#define TOW_SERVO_MIN_VALUE 0
+#define TOW_SERVO_OUT 90
+#define TOW_SERVO_IN 0
 
-#define MAX_SPEED 75 // speed limit to protect the motors
 #define LIFT30CM 1
 #define LIFT60CM 2
 #define LIFT90CM 3
 #define LIFT120CM 4
 #define LIFTDOWN 0
+
+#define CENTER_GOAL_P1 1
+#define CENTER_GOAL_P2 2
+#define CENTER_GOAL_P3 3
+
+#define LEFT -1
+#define RIGHT 1
+#define MAX_SPEED 75 // speed limit to protect the motors
 // TASK: figure out min-max open-close degrees
 // Create struct to hold sensor data
 // tHTGYRO gyroSensor;
 const tMUXSensor HTGYRO = msensor_S3_1;
+const tMUXSensor LEGOUS = msensor_S3_2;
+const tMUXSensor LEGOTOUCH = msensor_S3_3;
+// const tMUXSensor irSeeker = msensor_S3_4;
+tHTIRS2 irSeeker;
 
 void initializeRobot()
 {
+	if (HTSMUXreadPowerStatus(HTSMUX))
+	{
+		displayTextLine(0, "SMUX Batt: bad");
+		while(true)
+		{
+			playSound(soundLowBuzz);
+		}
+	}
+	else
+	{
+		displayTextLine(0, "SMUX Batt: good");
+	}
 	displayTextLine(0,"Initialising...");
 	nMotorEncoder[LiftA] = 0;
-	servo[up] = 0;
-	servo[forebarlink] = 0;
-	servo[Tow] = 0;
+	servo[up] = SCORE_SERVO_CLOSE;
+	servo[forebarlink] = FOREBAR_LINK_IN;
+	servo[Tow] = TOW_SERVO_IN;
+	initSensor(&irSeeker, msensor_S3_4);
 	// initSensor(&gyroSensor, S4);//gyro sensor port is 4
 	// sleep(500);
 	// sensorCalibrate(&gyroSensor);
+	sleep(1500);
 	HTGYROstartCal(HTGYRO);
-	sleep(1200);
 	return;
 }
-
 void DriveStop()//stop function
 {
 	motor[FrontRight]=0;
@@ -53,7 +77,6 @@ void DriveStop()//stop function
 	motor[BackRight]=0;
 	motor[BackLeft]=0;
 }
-
 void DriveBackForward(int speed)// defines forward function positive is forward negative
 {
 	motor[FrontRight]=speed;
@@ -61,7 +84,6 @@ void DriveBackForward(int speed)// defines forward function positive is forward 
 	motor[BackRight]=speed;
 	motor[BackLeft]=-speed;
 }
-
 void DriveTurn(int speed)// positive is left turn negative is right turn
 {
 	motor[FrontRight]=-speed;
@@ -69,7 +91,6 @@ void DriveTurn(int speed)// positive is left turn negative is right turn
 	motor[BackRight]=-speed;
 	motor[BackLeft]=-speed;
 }
-
 void DriveStrafe(int speed)//moves side to side positive is right negative is left
 {
 	motor[FrontRight]=-speed;
@@ -82,9 +103,9 @@ void Lift(int speed)
 	motor[LiftA]=speed;
 	motor[LiftB]=speed;
 }
-void Lift30cm()
+void Lift30cm()// 8000 encoder differince between each height
 {
-	while(nMotorEncoder[LiftA] > -6450)
+	while(nMotorEncoder[LiftA] > -6800)
 	{
 		Lift(-25);
 	}
@@ -92,7 +113,7 @@ void Lift30cm()
 }
 void Lift60cm()
 {
-	while(nMotorEncoder[LiftA] > -14550)
+	while(nMotorEncoder[LiftA] > -14800)
 	{
 		Lift(-25);
 	}
@@ -100,7 +121,7 @@ void Lift60cm()
 }
 void Lift90cm()
 {
-	while(nMotorEncoder[LiftA] > -23050)
+	while(nMotorEncoder[LiftA] > -22800)
 	{
 		Lift(-25);
 	}
@@ -122,17 +143,6 @@ void LiftDown()
 	}
 	Lift(0);
 }
-
-void ScoreOpenClose(int Degrees)
-{
-	servo[up] = Degrees;
-}
-void ForebarLinkOutIn(int Degrees)
-{
-	servo[forebarlink] = Degrees;
-}
-void TowOnOff(int Degrees)
-{}
 void InchDrive(int Action, int DriveXin)
 {
 	if(DriveXin < 0) return;
@@ -250,6 +260,31 @@ void gTurn(int Action, int Degrees)
 		sleep(50);
 	}
 	DriveTurn(0);
+}
+int cGPFinder() // center goal position finder
+{
+	int Position = 0;
+
+
+	return Position;
+}
+float conversion(float x)
+{
+  return (x*2.540000);
+}
+int uSDrive(int rTimeMS, int speed, int uSDistIn)
+{
+	time1[T2] = 0;
+	int uSDistCm = conversion(uSDistIn);
+	int uSCDist = USreadDist(LEGOUS);
+
+	while((time1[T2] < rTimeMS) && ( uSCDist >= uSDistCm ))
+	{
+	DriveStrafe(speed);
+	uSCDist = USreadDist(LEGOUS);
+	}
+	DriveStrafe(0);
+	return uSCDist;
 }
 void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
 {

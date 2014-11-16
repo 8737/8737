@@ -71,7 +71,19 @@ task main()
 {
 	initializeRobot();
 	sleep(2000);
-	// waitForStart(); // Wait for the beginning of autonomous phase.
+	waitForStart(); // Wait for the beginning of autonomous phase.
+	
+	int cGPosition = cGPFinder();
+	
+	switch(cGPosition)
+	{
+		case CENTER_GOAL_P1: // goal position 1
+			break;
+		case CENTER_GOAL_P2: //goal position 2
+			break;
+		case CENTER_GOAL_P3: // goal position 3
+			break;
+	}
 	// void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
 	// #define DRIVE_FORWARD 0
 	// #define DRIVE_BACK 1
@@ -90,15 +102,15 @@ task main()
 	// #define LIFT90CM 3
 	// #define LIFT120CM 4
 	// #define LIFTDOWN 0
-	sleep(2000);
-	AutonomousAction(DRIVE_FORWARD,0, 0, 24);
-	AutonomousAction(ROTATE_LEFT,0, 90, 0);
-	AutonomousAction(DRIVE_FORWARD,0, 0, 24);
-	AutonomousAction(ROTATE_LEFT,0, 90, 0);
-	AutonomousAction(DRIVE_FORWARD,0, 0, 24);
-	AutonomousAction(ROTATE_LEFT,0, 90, 0);
-	AutonomousAction(DRIVE_FORWARD,0, 0, 24);
-	AutonomousAction(ROTATE_LEFT,0, 90, 0);
+	// sleep(2000);
+	// AutonomousAction(DRIVE_FORWARD,0, 0, 24);
+	// AutonomousAction(ROTATE_LEFT,0, 90, 0);
+	// AutonomousAction(DRIVE_FORWARD,0, 0, 24);
+	// AutonomousAction(ROTATE_LEFT,0, 90, 0);
+	// AutonomousAction(DRIVE_FORWARD,0, 0, 24);
+	// AutonomousAction(ROTATE_LEFT,0, 90, 0);
+	// AutonomousAction(DRIVE_FORWARD,0, 0, 24);
+	// AutonomousAction(ROTATE_LEFT,0, 90, 0);
 	//servo[up] = -100;//90;
 	//AutonomousAction(SCORE_SERVO,0, 90, 0);
 	//AutonomousAction(FOREBAR_LINK,0, 120, 0);

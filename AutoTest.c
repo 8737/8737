@@ -93,6 +93,8 @@ task main()
 			sleep(200);
 		}
 		displayTextLine(2,"Action Selected");
+		playSound(soundBlip);
+		while(bSoundActive) sleep(1);
 		writeDebugStreamLine("Action: %d",Action);
 		writeDebugStreamLine("LiftAction %d",LiftAction);
 		writeDebugStreamLine("Degrees: %d",Degrees);
@@ -175,6 +177,8 @@ task main()
 			}
 			sleep(150);
 		}
+		playSound(soundBlip);
+		while(bSoundActive) sleep(1);
 		writeDebugStreamLine("Action: %d",Action);
 		writeDebugStreamLine("LiftAction %d",LiftAction);
 		writeDebugStreamLine("Degrees: %d",Degrees);
