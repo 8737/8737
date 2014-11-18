@@ -8,15 +8,17 @@ int LiftEncGap = 2;
 #define _LiftA LiftA
 #define _LiftB LiftB
 long TopLiftLimit =  29965;
-long FloorHeight [5] = {0, 6159, 14562, 22466, 29783};
+long FloorHeight [5] = {0, 6085, 14425, 22360, 29780};
 int LiftEncGap = 55; // +/- 2mm accuracy
 #endif
 
-
+bool FourBarDeployed=false;
 int DesiredFloor = -1;
 const int MaxAutoLiftSpeed=85;
 const int MinAutoLiftSpeed=15;
 const int ManualLiftSpeed=50;
+const int AutoDeployEncTop=3000;
+const int AutoDeployEncBottom=2500;
 
 
 void SetLiftSpeed(int MotorSpeed)
@@ -40,6 +42,51 @@ void ClearLiftEnc()
 	nMotorEncoder[_LiftA] = 0;
 }
 
+void SetFourBar(bool Deploy)
+{
+		if (Deploy)
+		{
+			servo[FourBarLink]=-90;
+		}
+		else
+		{
+				servo[FourBarLink]=185;
+		}
+}
+
+void SetScoreOpen(bool Drop)
+{
+		if (Drop)
+		{
+			servo[BallRelease]=90;
+		}
+		else
+		{
+				servo[servo1]=-80;
+		}
+}
+
+task TowMechTeleOP()
+{
+	bool TowUp = false;
+	while(true)
+	{
+		if(RB_Button_wasPressed(ButtonState, 1))// toggle towing upon press of A
+		{
+			TowUp = !TowUp;
+		}
+
+		if (TowUp)
+		{
+			servo[Tow]=90;
+		}
+		else
+		{
+			servo[Tow]=0;
+		}
+	}
+}
+
 int GetFloorBellow(long Encoder, int Slop)
 {
 	int CalculatedFloor = 0;
@@ -54,13 +101,13 @@ task LiftTeleOP()
 {
 	while(true)
 	{
-		if (SensorValue[LiftZeroSensor])
+		if (SensorValue[LiftDownTouch])
 		{
 			ClearLiftEnc();
 		}
 
 		long Enc = GetLiftEnc();
-//		writeDebugStreamLine("Enc: %d", Enc);
+		//writeDebugStreamLine("Enc: %d", Enc);
 		if(RB_Button_wasPressed(ButtonState, 6))// next floor upon press of RB
 		{
 			if(DesiredFloor<0)//not moving
@@ -127,10 +174,30 @@ task LiftTeleOP()
 			SetLiftSpeed(0);
 			DesiredFloor = -1;//stops auto program
 		}
-		if (SensorValue[LiftZeroSensor] && GetLiftSpeed()<0)//if bottom button is pressed and lifts are going down
+		if (SensorValue[LiftDownTouch] && GetLiftSpeed()<0)//if bottom button is pressed and lifts are going down
 		{
 			SetLiftSpeed(0);
 		}
+		//four bar linkage AutoDeploy and manual
+		if (Enc>AutoDeployEncTop)
+		{
+			FourBarDeployed = true;
+		}
+		else if (Enc<AutoDeployEncBottom)
+		{
+			FourBarDeployed = false;
+		}
+
+		if (RB_Button_isHeld(ButtonState, 2))// toggle four bar state using button B
+		{
+			SetFourBar(!FourBarDeployed);
+		}
+		else
+		{
+			SetFourBar(FourBarDeployed);
+		}
+		// ball release code
+		SetScoreOpen(RB_Button_isHeld(ButtonState, 4));//button Y
 
 		wait1Msec(10);
 	}
