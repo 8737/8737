@@ -92,4 +92,52 @@ bool RB_Button_wasReleased(RB_Button_State& s, byte button)
   releaseCPU();
   return (0 != (temp & mask));
 }
+
+/**
+ * Return absolute value of an integer value.
+ * Result is input if input >= 0 else -input
+ */
+inline int RB_abs(int in)
+{
+	return (in < 0 ? -in : in);
+}
+
+/**
+ * Return sign of input value (-1,0,1).
+ * Result is -1 if input is negative, 1 input positive else 0
+ */
+inline int RB_sgn(int in)
+{
+	return (in < 0 ? -1 : (in > 0 ? 1 : 0));
+}
+
+/**
+ * Constrain input values to be in range of in_min to in_max.
+ * Result is will be unformly between out_min and out_max for inputs between in_min and in_max.
+ */
+inline int RB_constrain(int in, int in_min, int in_max)
+{
+	return (in < in_min ? in_min : (in > in_max ? in_max : in));
+}
+
+/**
+ * Map input values from in_min to in_max into out_min to out_max uniformly
+ * Does not constrain output to be within output range, but guarantees
+ * range for specified input range.
+ * Result is will be unformly between out_min and out_max for inputs between in_min and in_max.
+ */
+int RB_map(int in, int in_min, int in_max, int out_min,int out_max)
+{
+	long m = in - in_min; // Use long to avoid overflow on multiply
+  // If ouput range larger than input then need to add 1 to ranges to avoid only 1 value mapping to out_max
+	if (out_max-out_min > in_max-in_min)
+	{
+		m = m * (out_max-out_min+1) / (in_max-in_min+1);
+	}
+	else
+	{
+		m = m * (out_max-out_min) / (in_max-in_min);
+	}
+	return (int)(m + out_min);
+}
 #endif
