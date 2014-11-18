@@ -1,3 +1,9 @@
+const int JoystickMin = 10;
+const int JoystickMax = 115;
+const int DriveMotorMin = 10;
+const int DriveMotorMax = 90;
+
+
 task Lift()
 {
 	nMotorEncoder[LiftA] = 0;
@@ -11,7 +17,7 @@ task Lift()
 			motor[LiftB]=-J1_Z1;
 			wait1Msec(100);
 		}
-		else if (J1_Z1 <= -10 && SensorValue(Touch) == 0)//&&nMotorEncoder[LiftA]>0)
+		else if (J1_Z1 <= -10 && SensorValue(LiftDownTouch) == 0)//&&nMotorEncoder[LiftA]>0)
 		{
 			motor[LiftA]=-J1_Z1;
 			motor[LiftB]=-J1_Z1;
@@ -32,10 +38,17 @@ task Drive()
 		int y = joystick.joy1_y1; // move forward/back
 		int r = joystick.joy1_x2; // rotate in place
 
+//#define Christopher
+#ifndef Christopher
 		// this changes the motor speed from linear to logarithmic
 		x = x * abs(x) / 160;
 		y = y * abs(y) / 160;
 		r = r * abs(r) / 160;
+#else
+		x = x ;
+		y = y ;
+		r = r ;
+#endif
 
 		//motor value & power using x,y, and r to allow the robot to move in any combinations of directions.
 		int FL = (-1 * y) + (-1 * x) + (-1 * r);
@@ -60,11 +73,11 @@ task ScoreOpenClose()
 	while(true){
 		if (joy1Btn(1)==1)
 		{
-			servo[servo1]=90;
+			servo[BallRelease]=90;
 		}
 		else
 		{
-				servo[servo1]=-80;
+				servo[BallRelease]=-80;
 		}
 	}
 }
@@ -74,11 +87,11 @@ task Forebar()
 	while(true){
 		if (joy1Btn(2)==1)
 		{
-			servo[forebarlink]=-90;
+			servo[FourBarLink]=-90;
 		}
 		else
 		{
-				servo[forebarlink]=150;
+				servo[FourBarLink]=150;
 		}
 	}
 }
