@@ -97,7 +97,7 @@ bool RB_Button_wasReleased(RB_Button_State& s, byte button)
  * Return absolute value of an integer value.
  * Result is input if input >= 0 else -input
  */
-inline int RB_abs(int in)
+int RB_abs(int in)
 {
 	return (in < 0 ? -in : in);
 }
@@ -106,7 +106,7 @@ inline int RB_abs(int in)
  * Return sign of input value (-1,0,1).
  * Result is -1 if input is negative, 1 input positive else 0
  */
-inline int RB_sgn(int in)
+int RB_sgn(int in)
 {
 	return (in < 0 ? -1 : (in > 0 ? 1 : 0));
 }
@@ -115,7 +115,7 @@ inline int RB_sgn(int in)
  * Constrain input values to be in range of in_min to in_max.
  * Result is will be unformly between out_min and out_max for inputs between in_min and in_max.
  */
-inline int RB_constrain(int in, int in_min, int in_max)
+int RB_constrain(int in, int in_min, int in_max)
 {
 	return (in < in_min ? in_min : (in > in_max ? in_max : in));
 }
