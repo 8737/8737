@@ -1,6 +1,7 @@
 #pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTMotor,  HTServo)
 #pragma config(Sensor, S2,     Touch,          sensorTouch)
 #pragma config(Sensor, S3,     HTSMUX,         sensorI2CCustom)
+#pragma config(Sensor, S4,     LiftZeroSensor, sensorTouch)
 #pragma config(Motor,  mtr_S1_C1_1,     FrontRight,    tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C1_2,     BackRight,     tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C2_1,     BackLeft,      tmotorTetrix, openLoop)
@@ -33,19 +34,31 @@
 |*    Port D                  motorD              12V                 Right motor                         *|
 |*    Port E                  motorE              12V                 Left motor                          *|
 \*---------------------------------------------------------------------------------------------------4246-*/
-
+#include "RBButtonLib.h";
+RB_Button_State ButtonState;
 #include "JoystickDriver.c"
+#include "SemiAutoLiftLib.c";
 #include "RobotMainLib.c"
+
 task main()
 {
+	RB_Button_Init(ButtonState);
+	startTask(LiftTeleOP);
 	startTask(Drive);
-	startTask(Lift);
+	//	startTask(Lift);
 	startTask(ScoreOpenClose);
 	startTask(Forebar);
 	startTask(TowMech);
-	wait1Msec(120000);
+	//wait1Msec(120000);
+	wait1Msec(1200);
 	while(true)
 	{
 		getJoystickSettings(joystick);
+		// Add Triggers as Buttons: 13=Right, 14=Left
+		short Z2 = joystick.joy1_y2;
+		short extraButtons = (Z2>=10 ? 1<<12 : (Z2<=-10 ? 1<<13 : 0));
+		writeDebugStreamLine("z2=%d b=%d e=%d", Z2, joystick.joy1_Buttons, extraButtons);
+		RB_Button_addState (ButtonState, joystick.joy1_Buttons | extraButtons);
+		wait1Msec(20);
 	}
 }
