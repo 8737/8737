@@ -71,7 +71,7 @@ task TowMechTeleOP()
 	bool TowUp = false;
 	while(true)
 	{
-		if(RB_Button_wasPressed(ButtonState, 1))// toggle towing upon press of A
+		if(RB_Button_wasPressed(ButtonState, 4))// toggle towing upon press of Y
 		{
 			TowUp = !TowUp;
 		}
@@ -150,22 +150,18 @@ task LiftTeleOP()
 			else // go to desired floor
 			{
 				long delta = FloorHeight[DesiredFloor] - Enc;
-			  long ADelta = (delta>=0 ? delta : -delta);
-				//				writeDebugStreamLine("Enc: %d Delta: %d", Enc, delta);
+			  long ADelta = RB_abs(delta);
 				if(ADelta<=LiftEncGap)
 				{
 					SetLiftSpeed(0);
-					//					DesiredFloor = -1; //have arrived within MinEnc of target
-					//writeDebugStreamLine("Stopped");
 				}
 				else if(ADelta <= (LiftEncGap * 20))
 				{
-				SetLiftSpeed(delta>0 ? MinAutoLiftSpeed : -MinAutoLiftSpeed);
+					SetLiftSpeed(RB_sgn(delta) * MinAutoLiftSpeed);
 				}
-
 				else
 				{
-				SetLiftSpeed(delta>0 ? MaxAutoLiftSpeed : -MaxAutoLiftSpeed);
+					SetLiftSpeed(RB_sgn(delta) * MaxAutoLiftSpeed);
 				}
 			}
 		}
@@ -197,7 +193,7 @@ task LiftTeleOP()
 			SetFourBar(FourBarDeployed);
 		}
 		// ball release code
-		SetScoreOpen(RB_Button_isHeld(ButtonState, 4));//button Y
+		SetScoreOpen(RB_Button_isHeld(ButtonState, 1));//button A
 
 		wait1Msec(10);
 	}
