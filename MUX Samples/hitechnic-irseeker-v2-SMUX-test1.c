@@ -57,7 +57,7 @@ task main ()
     {}
     eraseDisplay();
 
-    displayTextLine(0, "    DC 1200");
+    displayCenteredTextLine(0, "DC 1200");
 
     while (true)
     {

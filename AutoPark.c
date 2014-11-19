@@ -63,7 +63,7 @@
 //
 // This simple template does nothing except play a periodic tone every few seconds.
 //
-// At the end of the autonomous period, the FMS will autonmatically abort (stop) execution of the program.
+// At the end of the autonomous period, the FMS will automatically abort (stop) execution of the program.
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -72,16 +72,49 @@ task main()
 	initializeRobot();
 	sleep(2000);
 	waitForStart(); // Wait for the beginning of autonomous phase.
-	
+
 	int cGPosition = cGPFinder();
-	
+
 	switch(cGPosition)
 	{
 		case CENTER_GOAL_P1: // goal position 1
+			AutonomousAction(STRAFE_RIGHT,NONE,NONE,24);// AutonomousAction(Action,LiftAction,Degrees,Distance)
+			AutonomousAction(ROTATE_RIGHT,NONE,90,NONE);
+			uSDrive(6000,50,36);
+			AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_IN,NONE,NONE);
+			AutonomousAction(CONTROL_LIFT,LIFT120CM,NONE,NONE);
+			AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_OUT,NONE,NONE);
+			AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_OPEN,NONE);
+			AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_CLOSE,NONE);
+			AutonomousAction(CONTROL_LIFT,LIFTDOWN,NONE,NONE);
+			AutonomousAction(STRAFE_LEFT,NONE,NONE,36);
+			AutonomousAction(DRIVE_FORWARD,NONE,NONE,60);
 			break;
 		case CENTER_GOAL_P2: //goal position 2
+			AutonomousAction(ROTATE_RIGHT,NONE, 45, NONE);
+			AutonomousAction(DRIVE_FORWARD,NONE,NONE,24);
+			uSDrive(6000,50,36);
+			AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_IN,NONE,NONE);
+			AutonomousAction(CONTROL_LIFT,LIFT120CM,NONE,NONE);
+			AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_OUT,NONE,NONE);
+			AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_OPEN,NONE);
+			AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_CLOSE,NONE);
+			AutonomousAction(CONTROL_LIFT,LIFTDOWN,NONE,NONE);
+			AutonomousAction(STRAFE_LEFT,NONE,NONE,36);
+			AutonomousAction(DRIVE_FORWARD,NONE,NONE,60);
 			break;
 		case CENTER_GOAL_P3: // goal position 3
+			AutonomousAction(STRAFE_RIGHT,NONE,NONE,24);
+			AutonomousAction(DRIVE_FORWARD,NONE,NONE,24);
+			uSDrive(6000,50,36);
+			AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_IN,NONE,NONE);
+			AutonomousAction(CONTROL_LIFT,LIFT120CM,NONE,NONE);
+			AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_OUT,NONE,NONE);
+			AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_OPEN,NONE);
+			AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_CLOSE,NONE);
+			AutonomousAction(CONTROL_LIFT,LIFTDOWN,NONE,NONE);
+			AutonomousAction(STRAFE_LEFT,NONE,NONE,36);
+			AutonomousAction(DRIVE_FORWARD,NONE,NONE,60);
 			break;
 	}
 	// void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)

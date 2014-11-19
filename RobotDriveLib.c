@@ -34,6 +34,7 @@
 #define LEFT -1
 #define RIGHT 1
 #define MAX_SPEED 75 // speed limit to protect the motors
+#define NONE 0
 // TASK: figure out min-max open-close degrees
 // Create struct to hold sensor data
 // tHTGYRO gyroSensor;
@@ -103,7 +104,7 @@ void Lift(int speed)
 	motor[LiftA]=speed;
 	motor[LiftB]=speed;
 }
-void Lift30cm()// 8000 encoder differince between each height
+void Lift30cm()// 8000 encoder difference between each height
 {
 	while(nMotorEncoder[LiftA] > -6800)
 	{
@@ -222,7 +223,6 @@ void InchDrive(int Action, int DriveXin)
 	DriveBackForward(0);
 
 }
-
 void gTurn(int Action, int Degrees)
 {
 	float heading = 0;// current heading of gyro
@@ -263,10 +263,26 @@ void gTurn(int Action, int Degrees)
 }
 int cGPFinder() // center goal position finder
 {
-	int Position = 0;
-
-
-	return Position;
+	int cGPosition = 0;
+	int uSCDist = USreadDist(LEGOUS);
+	if(irSeeker.enhStrength <= 2 && uSCDist < 150)
+	{
+		cGPosition = 1;
+	}
+	else if(irSeeker.enhStrength > 2 && uSCDist >= 150)
+	{
+		cGPosition = 2;
+	}
+	else if(irSeeker.enhStrength > 2 && uSCDist < 150)
+	{
+		cGPosition = 3;
+	}
+	// if IR = 0 and US is = ~140 cm the cGPosition = 1
+	// if IR = S3 and US is > 150 cm the cGPosition = 2
+	// if IR = S3 and US is = ~130 cm the cGPosition = 3
+	// IR threshold = 2
+	// US max range = 150 cm
+	return cGPosition;
 }
 float conversion(float x)
 {
@@ -359,10 +375,30 @@ void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
 		while(bSoundActive) sleep(1);
 		playSound(soundBlip);
 		servo[up] = Degrees;
+		while(bSoundActive) sleep(1);
+		playSound(soundBlip);
+		while(bSoundActive) sleep(1);
+		playSound(soundBlip);
 	case FOREBAR_LINK:
+	while(bSoundActive) sleep(1);
+		playSound(soundBlip);
+		while(bSoundActive) sleep(1);
+		playSound(soundBlip);
 		servo[forebarlink] = Degrees;
+		while(bSoundActive) sleep(1);
+		playSound(soundBlip);
+		while(bSoundActive) sleep(1);
+		playSound(soundBlip);
 	case TOW_SERVO:
+	while(bSoundActive) sleep(1);
+		playSound(soundBlip);
+		while(bSoundActive) sleep(1);
+		playSound(soundBlip);
 		servo[Tow] = Degrees;
+		while(bSoundActive) sleep(1);
+		playSound(soundBlip);
+		while(bSoundActive) sleep(1);
+		playSound(soundBlip);
 	default:
 		break;
 	}

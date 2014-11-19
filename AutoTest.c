@@ -51,7 +51,7 @@ task main()
 				displayTextLine(0,"Action:");
 				displayTextLine(1,"StrafeLeft");
 				break;
-			case ROTATE_RIGHT://not working
+			case ROTATE_RIGHT: //not working
 				displayTextLine(0,"Action:");
 				displayTextLine(1,"RotateRight");
 				break;
