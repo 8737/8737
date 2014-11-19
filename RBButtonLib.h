@@ -130,7 +130,7 @@ int RB_map(int in, int in_min, int in_max, int out_min,int out_max)
 {
 	long m = in - in_min; // Use long to avoid overflow on multiply
   // If ouput range larger than input then need to add 1 to ranges to avoid only 1 value mapping to out_max
-	if (out_max-out_min > in_max-in_min)
+	if (out_max-out_min < in_max-in_min)
 	{
 		m = m * (out_max-out_min+1) / (in_max-in_min+1);
 	}
