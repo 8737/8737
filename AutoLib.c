@@ -19,6 +19,6 @@ task Lift()
 task Forebar()
 {
 	servo[forebarlink]=-90;
-	wait1Msec(9500)
+	wait1Msec(9500);
 	servo[forebarlink]=150;
 }
