@@ -18,22 +18,22 @@ task main()
 {
 	servo[Tow]=90;
 	servo[servo1]=-80;
-	wait1Msec(10000)
-	StartTask(Lift);
-	startTask(Forebar)
-	wait1Msec(500)
+	wait1Msec(10000);
+	startTask(Lift);
+	startTask(Forebar);
+	wait1Msec(500);
 	motor[FrontRight]=50;
 	motor[BackRight]=50;
-	wait1Msec(90)
+	wait1Msec(90);
 	motor[FrontLeft]=-50;
 	motor[BackLeft]=-50;
 	wait1Msec(3000);
-	DriveStop()
+	DriveStop();
 	wait1Msec(1200);
 
 	motor[FrontRight]=50;
 	motor[BackRight]=50;
-	wait1Msec(60)
+	wait1Msec(60);
 	motor[FrontLeft]=-50;
 	motor[BackLeft]=-50;
 	wait1Msec(700);
@@ -46,7 +46,7 @@ task main()
 
 	motor[FrontRight]=-25;
 	motor[BackRight]=-25;
-	wait1Msec(90)
+	wait1Msec(90);
 	motor[FrontLeft]=25;
 	motor[BackLeft]=25;
 	wait1Msec(800);
@@ -56,24 +56,43 @@ task main()
 	motor[FrontLeft]=50;
 	motor[BackRight]=50;
 	motor[BackLeft]=50;
-	wait1Msec(750);
+	wait1Msec(700);
 	DriveStop();
 
 	motor[FrontRight]=-50;
 	motor[FrontLeft]=-50;
 	motor[BackRight]=50;
 	motor[BackLeft]=50;
-	wait1Msec(1200);
+	wait1Msec(800);
 	DriveStop();
 	servo[Tow]=0;
-	wait1Msec(1000)
+	wait1Msec(1000);
 
 	motor[FrontRight]=50;
 	motor[BackRight]=-50;
-	wait1Msec(90)
+	wait1Msec(90);
 	motor[FrontLeft]=50;
 	motor[BackLeft]=-50;
-	wait1Msec(3000);
-	DriveStop()
-	wait1Msec(1200);
+	wait1Msec(1000);
+
+	// TODO: adjust angle to avoid ramp and center goal
+	motor[FrontRight]=-50;
+	motor[FrontLeft]=-50;
+	wait1Msec(350);
+
+	// TODO: adjust time to get to parking zone
+	motor[FrontRight]=50;
+	motor[FrontLeft]=50;
+	wait1Msec(3500);
+
+	// time is 700-(previous turn time) to 90 degree itself
+	motor[FrontRight]=-50;
+	motor[FrontLeft]=-50;
+	wait1Msec(350);
+
+	// TODO: adjust time to ensure the rolling goal is in parking zone
+	motor[FrontRight]=50;
+	motor[FrontLeft]=50;
+	wait1Msec(500);
+	DriveStop();
 }
