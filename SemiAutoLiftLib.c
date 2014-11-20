@@ -1,16 +1,7 @@
-#ifdef TEST_MOTOR
-int _LiftA=motorA;
-int _LiftB=motorA;
-long TopLiftLimit =  390;
-long FloorHeight [5] = {0, 90, 180, 270, 360};
-int LiftEncGap = 2;
-#else
-#define _LiftA LiftA
-#define _LiftB LiftB
 long TopLiftLimit =  29965;
 long FloorHeight [5] = {0, 6085, 14425, 22360, 29780};
 int LiftEncGap = 55; // +/- 2mm accuracy
-#endif
+const int LiftEncPerCM = 245;
 
 bool FourBarDeployed=false;
 int DesiredFloor = -1;
@@ -20,50 +11,51 @@ const int ManualLiftSpeed=50;
 const int AutoDeployEncTop=3000;
 const int AutoDeployEncBottom=2500;
 
+int CaptureState = -1;
 
 void SetLiftSpeed(int MotorSpeed)
 {
-	motor[_LiftA] = -MotorSpeed;
-	motor[_LiftB] = -MotorSpeed;
+	motor[LiftA] = -MotorSpeed;
+	motor[LiftB] = -MotorSpeed;
 }
 
 int GetLiftSpeed()
 {
-	return -motor[_LiftA];
+	return -motor[LiftA];
 }
 
 long GetLiftEnc()
 {
-	return -nMotorEncoder[_LiftA];
+	return -nMotorEncoder[LiftA];
 }
 
 void ClearLiftEnc()
 {
-	nMotorEncoder[_LiftA] = 0;
+	nMotorEncoder[LiftA] = 0;
 }
 
 void SetFourBar(bool Deploy)
 {
-		if (Deploy)
-		{
-			servo[FourBarLink]=-90;
-		}
-		else
-		{
-				servo[FourBarLink]=185;
-		}
+	if (Deploy)
+	{
+		servo[FourBarLink]=-90;
+	}
+	else
+	{
+		servo[FourBarLink]=185;
+	}
 }
 
 void SetScoreOpen(bool Drop)
 {
-		if (Drop)
-		{
-			servo[BallRelease]=90;
-		}
-		else
-		{
-				servo[servo1]=-80;
-		}
+	if (Drop)
+	{
+		servo[BallRelease]=90;
+	}
+	else
+	{
+		servo[servo1]=-80;
+	}
 }
 
 task TowMechTeleOP()
@@ -84,7 +76,60 @@ task TowMechTeleOP()
 		{
 			servo[Tow]=0;
 		}
+		wait1Msec(10);
 	}
+}
+
+void SemiAutoBallCapture(long Enc)
+{
+	switch (CaptureState)
+	{
+	case 1: //time to go down to 1 inch to grab ball
+		SetLiftSpeed(-MaxAutoLiftSpeed);
+		if (Enc < 3*LiftEncPerCM) // ~1"
+		{
+			clearTimer(T2);
+			CaptureState++;
+		}
+		else break;
+
+	case 2: // at one inch, time to allow passage to ball
+		SetLiftSpeed(0);
+		SetScoreOpen(true);
+		if (time1[T2] > 500) // half second
+		{
+			CaptureState++;
+		}
+		else break;
+
+	case 3: //dropp to ground
+		SetLiftSpeed(-MaxAutoLiftSpeed/2);
+		if (Enc <= 0)
+		{
+			clearTimer(T2);
+			CaptureState++;
+		}
+		else break;
+
+	case 4: // wait, lock
+		SetScoreOpen(false);
+		if (time1[T2] > 250) // 1/4 second
+		{
+			CaptureState++;
+		}
+		else break;
+
+	case 5 ://go up
+		SetLiftSpeed(MaxAutoLiftSpeed);
+		if (Enc > 9*LiftEncPerCM) // ~3.5in
+		{
+			SetLiftSpeed(MaxAutoLiftSpeed);
+			CaptureState = -1; // done
+		}
+		break;
+
+	default: // nothing
+	} // case
 }
 
 int GetFloorBellow(long Encoder, int Slop)
@@ -110,6 +155,7 @@ task LiftTeleOP()
 		//writeDebugStreamLine("Enc: %d", Enc);
 		if(RB_Button_wasPressed(ButtonState, 6))// next floor upon press of RB
 		{
+			CaptureState = -1;//shut off auto ball capture
 			if(DesiredFloor<0)//not moving
 			{
 				// Chaged a hard coded 2 (2 degrees on old encoder) to 4 MinGaps so ~1/4"
@@ -128,16 +174,19 @@ task LiftTeleOP()
 
 		if(RB_Button_wasPressed(ButtonState, 13))//return to ground upon right trigger press
 		{
+			CaptureState = -1;//shut off auto ball capture
 			DesiredFloor = 0;
 		}
 
 		if(RB_Button_isHeld(ButtonState, 5))//adjust up upon press of LB
 		{
+			CaptureState = -1;//shut off auto ball capture
 			DesiredFloor = -1;// dissable any auto-floor movement
 			SetLiftSpeed(ManualLiftSpeed);
 		}
 		else if(RB_Button_isHeld(ButtonState, 14))//adjust down upon left trigger press
 		{
+			CaptureState = -1;//shut off auto ball capture
 			DesiredFloor = -1;// dissable any auto-floor movement
 			SetLiftSpeed(-ManualLiftSpeed);
 		}
@@ -145,12 +194,15 @@ task LiftTeleOP()
 		{
 			if(DesiredFloor<0)//no floor, stop
 			{
-				SetLiftSpeed(0);
+				if (CaptureState < 0) // no auto capture
+				{
+					SetLiftSpeed(0);
+				}
 			}
 			else // go to desired floor
 			{
 				long delta = FloorHeight[DesiredFloor] - Enc;
-			  long ADelta = RB_abs(delta);
+				long ADelta = RB_abs(delta);
 				if(ADelta<=LiftEncGap)
 				{
 					SetLiftSpeed(0);
@@ -168,6 +220,7 @@ task LiftTeleOP()
 		if (Enc>TopLiftLimit && GetLiftSpeed()>0) //if slides too high and going up
 		{
 			SetLiftSpeed(0);
+			CaptureState = -1;//shut off auto ball capture
 			DesiredFloor = -1;//stops auto program
 		}
 		if (SensorValue[LiftDownTouch] && GetLiftSpeed()<0)//if bottom button is pressed and lifts are going down
@@ -192,9 +245,30 @@ task LiftTeleOP()
 		{
 			SetFourBar(FourBarDeployed);
 		}
+
+		if (RB_Button_wasPressed(ButtonState, 3))//button X
+		{
+			DesiredFloor = -1;//stops auto floor program
+			if (Enc > 8*LiftEncPerCM) // ~3"
+			{
+				CaptureState = 1; // Capture
+			}
+			else
+			{
+				CaptureState = 5; // Reset to 3.5"
+			}
+		}
+
 		// ball release code
-		SetScoreOpen(RB_Button_isHeld(ButtonState, 1));//button A
+		if (CaptureState>0) // in auto capture
+		{
+			SemiAutoBallCapture(Enc);
+		}
+		else
+		{
+			SetScoreOpen(RB_Button_isHeld(ButtonState, 1));//button A
+		}
 
 		wait1Msec(10);
-	}
+	}//while loop end
 }
