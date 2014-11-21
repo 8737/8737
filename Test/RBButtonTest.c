@@ -1,7 +1,7 @@
 // Library to assist checking of a Button Press, Release
 // Use by periodically calling RB_Button_addState with joystick.joy1_Buttons
-#include "RBButtonLib.h"
-#include "JoystickDriver.c"
+#include "../RBButtonLib.h"
+#include "../JoystickDriver.c"
 
 
 RB_Button_State s;
