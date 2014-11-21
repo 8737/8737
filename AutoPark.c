@@ -1,13 +1,13 @@
 #pragma config(Hubs,  S1, HTMotor,  HTMotor,  HTMotor,  none)
 #pragma config(Hubs,  S2, HTServo,  none,     none,     none)
-#pragma config(Sensor, S3,     HTSMUX,              sensorI2CCustom)
-#pragma config(Motor,  motorA,          Test,          tmotorNXT, PIDControl, encoder)
-#pragma config(Motor,  mtr_S1_C1_1,     FrontRight,    tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C1_2,     BackRight,     tmotorTetrix, openLoop)
+#pragma config(Sensor, S3,     HTSMUX,         sensorI2CCustom)
+#pragma config(Sensor, S4,     Touch,          sensorTouch)
+#pragma config(Motor,  mtr_S1_C1_1,     LiftA,         tmotorTetrix, openLoop, encoder)
+#pragma config(Motor,  mtr_S1_C1_2,     LiftB,         tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C2_1,     BackLeft,      tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C2_2,     FrontLeft,     tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C3_1,     LiftA,         tmotorTetrix, openLoop, encoder)
-#pragma config(Motor,  mtr_S1_C3_2,     LiftB,         tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C3_1,     FrontRight,    tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C3_2,     BackRight,     tmotorTetrix, openLoop)
 #pragma config(Servo,  srvo_S2_C1_1,    up,                   tServoStandard)
 #pragma config(Servo,  srvo_S2_C1_2,    forebarlink,          tServoStandard)
 #pragma config(Servo,  srvo_S2_C1_3,    servo3,               tServoNone)
@@ -70,51 +70,64 @@
 task main()
 {
 	initializeRobot();
-	sleep(2000);
-	waitForStart(); // Wait for the beginning of autonomous phase.
 
+//motor[FrontLeft] = 50;
+//	sleep(2000);
+//	motor[FrontLeft] = 0;
+	//waitForStart(); // Wait for the beginning of autonomous phase.
+	AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_OUT,NONE,NONE);
+	sleep(200);
 	int cGPosition = cGPFinder();
-
+	writeDebugStreamLine("cGPosition: %d",cGPosition);
 	switch(cGPosition)
 	{
 		case CENTER_GOAL_P1: // goal position 1
-			AutonomousAction(STRAFE_RIGHT,NONE,NONE,24);// AutonomousAction(Action,LiftAction,Degrees,Distance)
+			displayBigTextLine(1,"CENTER_GOAL_P1");
+
+			AutonomousAction(STRAFE_LEFT,NONE,NONE,25);// AutonomousAction(Action,LiftAction,Degrees,Distance)
 			AutonomousAction(ROTATE_RIGHT,NONE,90,NONE);
-			uSDrive(6000,50,36);
+			uSDrive(6000,50,16);
+			// once at centrer goal structure:
+			InchDrive (DRIVE_BACK,3);
 			AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_IN,NONE,NONE);
 			AutonomousAction(CONTROL_LIFT,LIFT120CM,NONE,NONE);
-			AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_OUT,NONE,NONE);
+			InchDrive (DRIVE_FORWARD,3);
 			AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_OPEN,NONE);
 			AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_CLOSE,NONE);
+			InchDrive (DRIVE_BACK,3);
+			AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_IN,NONE,NONE);
 			AutonomousAction(CONTROL_LIFT,LIFTDOWN,NONE,NONE);
-			AutonomousAction(STRAFE_LEFT,NONE,NONE,36);
-			AutonomousAction(DRIVE_FORWARD,NONE,NONE,60);
+			AutonomousAction(STRAFE_RIGHT,NONE,NONE,9);
+			AutonomousAction(ROTATE_LEFT,NONE,90,NONE);
+			 AutonomousAction(STRAFE_RIGHT,NONE,NONE,60);
 			break;
 		case CENTER_GOAL_P2: //goal position 2
-			AutonomousAction(ROTATE_RIGHT,NONE, 45, NONE);
-			AutonomousAction(DRIVE_FORWARD,NONE,NONE,24);
-			uSDrive(6000,50,36);
-			AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_IN,NONE,NONE);
-			AutonomousAction(CONTROL_LIFT,LIFT120CM,NONE,NONE);
-			AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_OUT,NONE,NONE);
-			AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_OPEN,NONE);
-			AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_CLOSE,NONE);
-			AutonomousAction(CONTROL_LIFT,LIFTDOWN,NONE,NONE);
-			AutonomousAction(STRAFE_LEFT,NONE,NONE,36);
-			AutonomousAction(DRIVE_FORWARD,NONE,NONE,60);
+			//displayBigTextLine(1,"CENTER_GOAL_P2");
+			 //AutonomousAction(ROTATE_RIGHT,NONE, 45, NONE);
+			 //AutonomousAction(DRIVE_FORWARD,NONE,NONE,24);
+			// uSDrive(6000,50,36);
+			// AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_IN,NONE,NONE);
+			// AutonomousAction(CONTROL_LIFT,LIFT120CM,NONE,NONE);
+			// AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_OUT,NONE,NONE);
+			// AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_OPEN,NONE);
+			// AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_CLOSE,NONE);
+			// AutonomousAction(CONTROL_LIFT,LIFTDOWN,NONE,NONE);
+			// AutonomousAction(STRAFE_LEFT,NONE,NONE,36);
+			// AutonomousAction(DRIVE_FORWARD,NONE,NONE,48);
 			break;
-		case CENTER_GOAL_P3: // goal position 3
-			AutonomousAction(STRAFE_RIGHT,NONE,NONE,24);
-			AutonomousAction(DRIVE_FORWARD,NONE,NONE,24);
-			uSDrive(6000,50,36);
-			AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_IN,NONE,NONE);
-			AutonomousAction(CONTROL_LIFT,LIFT120CM,NONE,NONE);
-			AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_OUT,NONE,NONE);
-			AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_OPEN,NONE);
-			AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_CLOSE,NONE);
-			AutonomousAction(CONTROL_LIFT,LIFTDOWN,NONE,NONE);
-			AutonomousAction(STRAFE_LEFT,NONE,NONE,36);
-			AutonomousAction(DRIVE_FORWARD,NONE,NONE,60);
+		case CENTER_GOAL_P3:// goal position 3
+			//displayBigTextLine(1,"CENTER_GOAL_P3");
+			// AutonomousAction(STRAFE_RIGHT,NONE,NONE,24);
+			// AutonomousAction(DRIVE_FORWARD,NONE,NONE,24);
+			// uSDrive(6000,50,36);
+			// AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_IN,NONE,NONE);
+			// AutonomousAction(CONTROL_LIFT,LIFT120CM,NONE,NONE);
+			// AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_OUT,NONE,NONE);
+			// AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_OPEN,NONE);
+			// AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_CLOSE,NONE);
+			// AutonomousAction(CONTROL_LIFT,LIFTDOWN,NONE,NONE);
+			// AutonomousAction(STRAFE_LEFT,NONE,NONE,36);
+			// AutonomousAction(DRIVE_FORWARD,NONE,NONE,60);
 			break;
 	}
 	// void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
@@ -135,34 +148,6 @@ task main()
 	// #define LIFT90CM 3
 	// #define LIFT120CM 4
 	// #define LIFTDOWN 0
-	// sleep(2000);
-	// AutonomousAction(DRIVE_FORWARD,0, 0, 24);
-	// AutonomousAction(ROTATE_LEFT,0, 90, 0);
-	// AutonomousAction(DRIVE_FORWARD,0, 0, 24);
-	// AutonomousAction(ROTATE_LEFT,0, 90, 0);
-	// AutonomousAction(DRIVE_FORWARD,0, 0, 24);
-	// AutonomousAction(ROTATE_LEFT,0, 90, 0);
-	// AutonomousAction(DRIVE_FORWARD,0, 0, 24);
-	// AutonomousAction(ROTATE_LEFT,0, 90, 0);
-	//servo[up] = -100;//90;
-	//AutonomousAction(SCORE_SERVO,0, 90, 0);
-	//AutonomousAction(FOREBAR_LINK,0, 120, 0);
-	//AutonomousAction(TOW_SERVO,0, 90, 0);
-	//sleep(10000000000);
-	// sleep(2000);
-	// DriveBackForward(25);
-	// sleep(1000);
-	// DriveTurn(25);
-	// sleep(1000);
-	// DriveStrafe(25);
-	// sleep(1000);
-	// DriveStop();
-	// sleep(2000);
-	//sleep(2000);
-	// AutonomousAction(SCORE_SERVO,0, 20, 0);
-	// AutonomousAction(FOREBAR_LINK,0, 20, 0);
-	// AutonomousAction(TOW_SERVO,0, 20, 0);
-
-	//while (true)
-	//{}
+	while (true)
+	{}
 }

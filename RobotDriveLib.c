@@ -35,17 +35,32 @@
 #define RIGHT 1
 #define MAX_SPEED 75 // speed limit to protect the motors
 #define NONE 0
+#define IR_THRESHOLD 3
+#define US_CG_THRESHOLD 150
 // TASK: figure out min-max open-close degrees
 // Create struct to hold sensor data
-// tHTGYRO gyroSensor;
+// #ifdef __HTSMUX_SUPPORT__
 const tMUXSensor HTGYRO = msensor_S3_1;
-const tMUXSensor LEGOUS = msensor_S3_2;
-const tMUXSensor LEGOTOUCH = msensor_S3_3;
-// const tMUXSensor irSeeker = msensor_S3_4;
+tHTGYRO gyroSensor;
+const tMUXSensor LEGOUS = msensor_S3_3;
+// const tMUXSensor LEGOTOUCH = msensor_S3_4;
+// #else
+// tSensors LEGOUS = S2;
+
+// #endif
+//tSensors LEGOUS = S2;
+
 tHTIRS2 irSeeker;
+//tHTGYRO gyroSensor;
+
+int Action;
+int LiftAction;
+int Degrees;
+int Distance;
 
 void initializeRobot()
 {
+	#ifdef __HTSMUX_SUPPORT__
 	if (HTSMUXreadPowerStatus(HTSMUX))
 	{
 		displayTextLine(0, "SMUX Batt: bad");
@@ -58,25 +73,34 @@ void initializeRobot()
 	{
 		displayTextLine(0, "SMUX Batt: good");
 	}
+	#endif
 	displayTextLine(0,"Initialising...");
 	nMotorEncoder[LiftA] = 0;
 	servo[up] = SCORE_SERVO_CLOSE;
 	servo[forebarlink] = FOREBAR_LINK_IN;
 	servo[Tow] = TOW_SERVO_IN;
-	initSensor(&irSeeker, msensor_S3_4);
-	// initSensor(&gyroSensor, S4);//gyro sensor port is 4
-	// sleep(500);
-	// sensorCalibrate(&gyroSensor);
+	//#ifdef __HTSMUX_SUPPORT__
+	initSensor(&irSeeker, msensor_S3_2);
+	initSensor(&gyroSensor, msensor_S3_3);
+	//#else
+	//initSensor(&irSeeker, S1);
+	//initSensor(&gyroSensor, S4);
+	//#endif
+	//initSensor(&irSeeker, S1);
+	//initSensor(&gyroSensor, S4);
+	//sensorCalibrate(&gyroSensor);
 	sleep(1500);
-	HTGYROstartCal(HTGYRO);
+	//sensorCalibrate(&gyroSensor);
+	//HTGYROstartCal(gyroSensor);
+	// initSensor(&gyroSensor, S1);
 	return;
 }
 void DriveStop()//stop function
 {
 	motor[FrontRight]=0;
+	motor[BackLeft]=0;
 	motor[FrontLeft]=0;
 	motor[BackRight]=0;
-	motor[BackLeft]=0;
 }
 void DriveBackForward(int speed)// defines forward function positive is forward negative
 {
@@ -229,19 +253,24 @@ void gTurn(int Action, int Degrees)
 	time1[T1] = 0;
 	int offset = 13;
 	float gRot = HTGYROreadRot(HTGYRO);
+	sensorCalibrate(&gyroSensor);
 	if(Degrees > 45) Degrees -= offset;
 	while (abs(heading) < abs(Degrees))// while current heading is < targetHeading
 	{
 		gRot = HTGYROreadRot(HTGYRO);// get current rate of rotation
+		// readSensor(&gyroSensor);
 		float interval = (float)1000 / (float)time1[T1];
 		writeDebugStreamLine ("gRot:%f ",gRot);
+		// writeDebugStreamLine ("gRot:%f ",gyroSensor.rotation);
 		writeDebugStreamLine ("heading:%f ",heading);
 		writeDebugStreamLine ("interval:%f ",interval);
 		writeDebugStreamLine ("Degrees:%d ",Degrees);
 		time1[T1] = 0;// set timer1 to 0
 
-		if(gRot > 0.6 || gRot < -0.6)// threshold
+		//if(gRot > 0.6 || gRot < -0.6)// threshold
+		if(gyroSensor.rotation > 0.6 || gyroSensor.rotation < -0.6)// threshold
 		{
+			// heading += gyroSensor.rotation / interval;// sets heading to heading + gyroSensor.rotation / 100
 			heading += gRot / interval;// sets heading to heading + gyroSensor.rotation / 100
 		}
 		displayTextLine(6, "heading:%f",heading);
@@ -265,15 +294,19 @@ int cGPFinder() // center goal position finder
 {
 	int cGPosition = 0;
 	int uSCDist = USreadDist(LEGOUS);
-	if(irSeeker.enhStrength <= 2 && uSCDist < 150)
+	readSensor(&irSeeker);
+	writeDebugStreamLine("ir: %d",irSeeker.acValues[2] );
+	writeDebugStreamLine("uSCDist: %d",uSCDist );
+
+	if(irSeeker.acValues[2] <= IR_THRESHOLD && uSCDist < US_CG_THRESHOLD)
 	{
 		cGPosition = 1;
 	}
-	else if(irSeeker.enhStrength > 2 && uSCDist >= 150)
+	else if(irSeeker.acValues[2] > IR_THRESHOLD && uSCDist >= US_CG_THRESHOLD)
 	{
 		cGPosition = 2;
 	}
-	else if(irSeeker.enhStrength > 2 && uSCDist < 150)
+	else if(irSeeker.acValues[2] > IR_THRESHOLD && uSCDist < US_CG_THRESHOLD)
 	{
 		cGPosition = 3;
 	}
@@ -302,7 +335,7 @@ int uSDrive(int rTimeMS, int speed, int uSDistIn)
 	DriveStrafe(0);
 	return uSCDist;
 }
-void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
+ void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
 {
 	writeDebugStreamLine("Action: %d",Action);
 	writeDebugStreamLine("LiftAction %d",LiftAction);
@@ -410,3 +443,130 @@ void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
 //it takes two variables
 // First is Action
 // Second is distance/degrees/LiftAction
+//task AutomousTask ()
+//{
+//switch(Action)
+//	{
+//	// case DRIVE_FORWARD:
+//	// case DRIVE_BACK:
+//	// case STRAFE_RIGHT:
+//	// case STRAFE_LEFT:
+//		// displayTextLine(5,"Driving");
+//		// playSound(soundBlip);
+//		// while(bSoundActive) sleep(1);
+//		// playSound(soundBlip);
+//		// while(bSoundActive) sleep(1);
+//		// InchDrive(Action,Distance);
+//		// playSound(soundBlip);
+//		// while(bSoundActive) sleep(1);
+//		// playSound(soundBlip);
+//		// while(bSoundActive) sleep(1);
+//		// break;
+//	// case ROTATE_RIGHT:
+//	// case ROTATE_LEFT:
+//		// displayTextLine(5,"Turning");
+//		// playSound(soundBlip);
+//		// while(bSoundActive) sleep(1);
+//		// playSound(soundBlip);
+//		// while(bSoundActive) sleep(1);
+//		// gTurn(Action,Degrees);
+//		// playSound(soundBlip);
+//		// while(bSoundActive) sleep(1);
+//		// playSound(soundBlip);
+//		// while(bSoundActive) sleep(1);
+//		// break;
+//	case CONTROL_LIFT:
+//		displayTextLine(5,"Lifting");
+//		sleep(1500);
+//		playSound(soundBlip);
+//		while(bSoundActive) sleep(1);
+//		playSound(soundBlip);
+//		while(bSoundActive) sleep(1);
+//		switch(LiftAction)
+//		{
+//		case LIFT30CM:
+//			Lift30cm();
+//			break;
+//		case LIFT60CM:
+//			Lift60cm();
+//			break;
+//		case LIFT90CM:
+//			Lift90cm();
+//			break;
+//		case LIFT120CM:
+//			Lift120cm();
+//			break;
+//		case LIFTDOWN:
+//			LiftDown();
+//			break;
+//		default:
+//			break;
+//		}
+//		playSound(soundBlip);
+//		while(bSoundActive) sleep(1);
+//		playSound(soundBlip);
+//		while(bSoundActive) sleep(1);
+//	case SCORE_SERVO:
+//		while(bSoundActive) sleep(1);
+//		playSound(soundBlip);
+//		while(bSoundActive) sleep(1);
+//		playSound(soundBlip);
+//		servo[up] = Degrees;
+//		while(bSoundActive) sleep(1);
+//		playSound(soundBlip);
+//		while(bSoundActive) sleep(1);
+//		playSound(soundBlip);
+//	case FOREBAR_LINK:
+//	while(bSoundActive) sleep(1);
+//		playSound(soundBlip);
+//		while(bSoundActive) sleep(1);
+//		playSound(soundBlip);
+//		servo[forebarlink] = Degrees;
+//		while(bSoundActive) sleep(1);
+//		playSound(soundBlip);
+//		while(bSoundActive) sleep(1);
+//		playSound(soundBlip);
+//	case TOW_SERVO:
+//	while(bSoundActive) sleep(1);
+//		playSound(soundBlip);
+//		while(bSoundActive) sleep(1);
+//		playSound(soundBlip);
+//		servo[Tow] = Degrees;
+//		while(bSoundActive) sleep(1);
+//		playSound(soundBlip);
+//		while(bSoundActive) sleep(1);
+//		playSound(soundBlip);
+//	default:
+//		break;
+//	}
+//	writeDebugStreamLine("ScoreOpenClose: %d",ServoValue[up]);
+//	writeDebugStreamLine("forebarlink: %d",ServoValue[forebarlink]);
+//	writeDebugStreamLine("Tow: %d",ServoValue[Tow]);
+//}
+//void AutonomousActionAuto()
+//{
+	//AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_IN,NONE,NONE);
+	//AutonomousAction(CONTROL_LIFT,LIFT120CM,NONE,NONE);
+
+	// Action = CONTROL_LIFT;
+	// LiftAction = LIFT120CM;
+	// Distance = NONE;
+	// Degrees = NONE;
+	// startTask(AutomousTask);
+
+	// AutonomousAction(DRIVE_BACK,NONE,NONE,3);
+	//InchDrive (DRIVE_BACK,3);
+
+	//AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_OUT,NONE,NONE);
+	// AutonomousAction(DRIVE_FORWARD,NONE,NONE,3);
+	//InchDrive (DRIVE_FORWARD,3);
+	//AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_OPEN,NONE);
+	//AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_CLOSE,NONE);
+	//AutonomousAction(DRIVE_BACK,NONE,NONE,3);
+	//AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_IN,NONE,NONE);
+	//InchDrive (DRIVE_BACK,3);
+	//AutonomousAction(CONTROL_LIFT,LIFTDOWN,NONE,NONE);
+	//AutonomousAction(STRAFE_RIGHT,NONE,NONE,30);
+	//AutonomousAction(ROTATE_LEFT,NONE,90,NONE);
+	//AutonomousAction(STRAFE_RIGHT,NONE,NONE,60);
+//}q
