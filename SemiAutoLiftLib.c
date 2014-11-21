@@ -54,7 +54,7 @@ void SetScoreOpen(bool Drop)
 	}
 	else
 	{
-		servo[servo1]=-80;
+		servo[BallRelease]=-80;
 	}
 }
 
@@ -123,7 +123,7 @@ void SemiAutoBallCapture(long Enc)
 		SetLiftSpeed(MaxAutoLiftSpeed);
 		if (Enc > 9*LiftEncPerCM) // ~3.5in
 		{
-			SetLiftSpeed(MaxAutoLiftSpeed);
+			SetLiftSpeed(0);
 			CaptureState = -1; // done
 		}
 		break;
