@@ -24,15 +24,6 @@ RB_Button_State ButtonState;
 
 task main()
 {
-wait1Msec( 2000 );
-	eraseDisplay();
-//	nxtDisplayString(0, "12=%d 0=%d -12=%d", RB_abs(12), RB_abs(0), RB_abs(-12));
-// nxtDisplayString(2, "12=%d 0=%d -12=%d", RB_sgn(12), RB_sgn(0), RB_sgn(-12));
-// nxtDisplayString(2, "12=%d 0=%d -12=%d", RB_constrain(12,0,10), RB_constrain(0,0,10), RB_constrain(-12,0,10));
-// nxtDisplayString(0, "2=%d 3=%d 4=%d", RB_map(2,2,4,0,10), RB_map(3,2,4,0,10), RB_map(4,2,4,0,10));
- //nxtDisplayString(0, "1=%d 4=%d 10=%d", RB_map(1,0,10,2,4), RB_map(4,0,10,2,4), RB_map(10,0,10,2,4));
-//wait1Msec( 5000 );
-
 	RB_Button_Init(ButtonState);
 	startTask(LiftTeleOP);
 	startTask(CBDrive);
