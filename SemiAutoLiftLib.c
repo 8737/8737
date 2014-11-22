@@ -60,19 +60,13 @@ void SetScoreOpen(bool Drop)
 
 task TowMechTeleOP()
 {
-	bool TowUp = false;
 	while(true)
 	{
-		if(RB_Button_wasPressed(ButtonState, 4))// toggle towing upon press of Y
-		{
-			TowUp = !TowUp;
-		}
-
-		if (TowUp)
+		if(RB_Button_wasPressed(ButtonState, 4))// switch towing upon press of Y
 		{
 			servo[Tow]=90;
 		}
-		else
+		if(RB_Button_wasPressed(ButtonState, 1))// switch towing down press of 1
 		{
 			servo[Tow]=0;
 		}
@@ -172,7 +166,7 @@ task LiftTeleOP()
 			}
 		}
 
-		if(RB_Button_wasPressed(ButtonState, 13))//return to ground upon right trigger press
+		if(RB_Button_wasPressed(ButtonState, 8))//return to ground upon right trigger press
 		{
 			CaptureState = -1;//shut off auto ball capture
 			DesiredFloor = 0;
@@ -184,7 +178,7 @@ task LiftTeleOP()
 			DesiredFloor = -1;// dissable any auto-floor movement
 			SetLiftSpeed(ManualLiftSpeed);
 		}
-		else if(RB_Button_isHeld(ButtonState, 14))//adjust down upon left trigger press
+		else if(RB_Button_isHeld(ButtonState, 7))//adjust down upon left trigger press
 		{
 			CaptureState = -1;//shut off auto ball capture
 			DesiredFloor = -1;// dissable any auto-floor movement
@@ -237,7 +231,7 @@ task LiftTeleOP()
 			FourBarDeployed = false;
 		}
 
-		if (RB_Button_isHeld(ButtonState, 2))// toggle four bar state using button B
+		if (RB_Button_isHeld(ButtonState, 3))// toggle four bar state using button B
 		{
 			SetFourBar(!FourBarDeployed);
 		}
@@ -246,7 +240,7 @@ task LiftTeleOP()
 			SetFourBar(FourBarDeployed);
 		}
 
-		if (RB_Button_wasPressed(ButtonState, 3))//button X
+		if (RB_Button_wasPressed(ButtonState, 10))//button START
 		{
 			DesiredFloor = -1;//stops auto floor program
 			if (Enc > 8*LiftEncPerCM) // ~3"
@@ -266,7 +260,7 @@ task LiftTeleOP()
 		}
 		else
 		{
-			SetScoreOpen(RB_Button_isHeld(ButtonState, 1));//button A
+			SetScoreOpen(RB_Button_isHeld(ButtonState, 2));//button A
 		}
 
 		wait1Msec(10);
