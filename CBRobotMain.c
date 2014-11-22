@@ -2,12 +2,12 @@
 #pragma config(Hubs,  S2, HTServo,  none,     none,     none)
 #pragma config(Sensor, S3,     HTSMUX,         sensorI2CCustom)
 #pragma config(Sensor, S4,     LiftDownTouch,  sensorTouch)
-#pragma config(Motor,  mtr_S1_C1_1,     FrontRight,    tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C1_2,     BackRight,     tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C1_1,     LiftA,    tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C1_2,     LiftB,     tmotorTetrix, openLoop, reversed)
 #pragma config(Motor,  mtr_S1_C2_1,     BackLeft,      tmotorTetrix, openLoop)
 #pragma config(Motor,  mtr_S1_C2_2,     FrontLeft,     tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C3_1,     LiftA,         tmotorTetrix, openLoop)
-#pragma config(Motor,  mtr_S1_C3_2,     LiftB,         tmotorTetrix, openLoop, reversed)
+#pragma config(Motor,  mtr_S1_C3_1,     FrontRight,         tmotorTetrix, openLoop)
+#pragma config(Motor,  mtr_S1_C3_2,     BackRight,         tmotorTetrix, openLoop)
 #pragma config(Servo,  srvo_S2_C1_1,    BallRelease,          tServoStandard)
 #pragma config(Servo,  srvo_S2_C1_2,    FourBarLink,          tServoStandard)
 #pragma config(Servo,  srvo_S2_C1_3,    servo3,               tServoNone)
@@ -22,9 +22,26 @@ RB_Button_State ButtonState;
 #include "SemiAutoLiftLib.c";
 #include "CBRobotMainLib.c"
 
+void initializeRobot()
+{
+	SetFourBar(false);//set 4 bar down
+	SetScoreOpen(false);//close score string
+	servo[Tow]=0; // tow arm set down
+
+	if (! SensorValue[LiftDownTouch])//if NOT bottom button is pressed warn driver to go down
+	{
+		playTone(1000,500); // 1000Hz for 1/2sec
+	}
+}
+
+
 task main()
 {
 	RB_Button_Init(ButtonState);
+
+	initializeRobot(); // Servo etc setup
+	waitForStart(); // wait for start of tele-op phase
+
 	startTask(LiftTeleOP);
 	startTask(CBDrive);
 	startTask(TowMechTeleOP);
@@ -33,9 +50,10 @@ task main()
 	{
 		getJoystickSettings(joystick);
 		// Add Triggers as Buttons: 13=Right, 14=Left
-		short Z2 = joystick.joy1_y2;
-		short extraButtons = (Z2>=10 ? 1<<12 : (Z2<=-10 ? 1<<13 : 0));
-		RB_Button_addState (ButtonState, joystick.joy1_Buttons | extraButtons);
+		// short Z2 = joystick.joy1_y2;
+		// short extraButtons = (Z2>=10 ? 1<<12 : (Z2<=-10 ? 1<<13 : 0));
+		// RB_Button_addState (ButtonState, joystick.joy1_Buttons | extraButtons);
+		RB_Button_addState (ButtonState, joystick.joy1_Buttons);
 		wait1Msec(20);
 	}
 }
