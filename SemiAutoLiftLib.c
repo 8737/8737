@@ -1,5 +1,5 @@
-long TopLiftLimit =  29965;
-long FloorHeight [5] = {0, 6085, 14425, 22360, 29780};
+long TopLiftLimit =  30300;
+long FloorHeight [5] = {0, 6085, 14425, 22360, 30000};
 int LiftEncGap = 55; // +/- 2mm accuracy
 const int LiftEncPerCM = 245;
 
@@ -8,8 +8,8 @@ int DesiredFloor = -1;
 const int MaxAutoLiftSpeed=85;
 const int MinAutoLiftSpeed=15;
 const int ManualLiftSpeed=50;
-const int AutoDeployEncTop=3000;
-const int AutoDeployEncBottom=2500;
+const int AutoDeployEncTop=5000;
+const int AutoDeployEncBottom=4500;
 
 int CaptureState = -1;
 
@@ -69,6 +69,27 @@ task TowMechTeleOP()
 		if(RB_Button_wasPressed(ButtonState, 1))// switch towing down press of 1
 		{
 			servo[Tow]=0;
+		}
+		wait1Msec(10);
+	}
+}
+
+task KickStandTeleOP()
+{
+	bool KickStandDown = false;
+	while(true)
+	{
+		if(RB_Button_wasPressed(ButtonState, 9))// toggle on button "BACK"
+		{
+			KickStandDown = !KickStandDown;
+		}
+		if (KickStandDown)
+		{
+			servo[KickStand]=70;
+		}
+		else
+		{
+			servo[KickStand]=180;
 		}
 		wait1Msec(10);
 	}
