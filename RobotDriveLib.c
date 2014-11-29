@@ -207,7 +207,6 @@ void gTurn(int Action, int Degrees)
 	time1[T1] = 0;
 	int offset = 13;
 	float gRot = HTGYROreadRot(HTGYRO);
-	//sensorCalibrate(&gyroSensor);
 	if(Degrees > 45) Degrees -= offset;
 	while (abs(heading) < abs(Degrees))// while current heading is < targetHeading
 	{
