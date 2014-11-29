@@ -1,4 +1,4 @@
-#pragma config(Sensor, S3,     HTSMUX,              sensorI2CCustom)
+#pragma config(Sensor, S3,     HTSMUX,              sensorI2CCustom9V)
 /**
  * hitechnic-irseeker-v2.h provides an API for the HiTechnic IR Seeker V2.  This program
  * demonstrates how to use that API.
@@ -21,7 +21,7 @@
  */
 #include "C:\Program Files (x86)\Robomatter Inc\ROBOTC Development Environment 4.X\Sample Programs\NXT\3rd Party Driver Library\include\hitechnic-sensormux.h"
 #include "C:\Program Files (x86)\Robomatter Inc\ROBOTC Development Environment 4.X\Sample Programs\NXT\3rd Party Driver Library\include\hitechnic-irseeker-v2.h"
-
+#include "C:\Program Files (x86)\Robomatter Inc\ROBOTC Development Environment 4.X\Sample Programs\NXT\3rd Party Driver Library\include\hitechnic-gyro.h"
 //#include "hitechnic-irseeker-v2.h"
 
 // main task
@@ -45,10 +45,10 @@ task main ()
 	// we would use msensor_S4_3
 
   // Initialise and configure struct and port
-  initSensor(&irSeeker, msensor_S3_4);
-
-  while(true)
-  {
+  initSensor(&irSeeker, msensor_S3_2);
+  wait1Msec(2000);
+  eraseDisplay();
+  time1[T1] = 0;
     // You can switch between the two different DSP modes by pressing the
     // orange enter button
 
@@ -73,4 +73,3 @@ task main ()
       sleep(500);
     }
   }
-}
