@@ -81,16 +81,21 @@ task main()
 	{
 		case CENTER_GOAL_P1: // goal position
 			displayBigTextLine(1,"CENTER_GOAL_P1");
-
-			AutonomousAction(STRAFE_LEFT,NONE,NONE,25);// AutonomousAction(Action,LiftAction,Degrees,Distance)
+			// AutonomousAction(Action,LiftAction,Degrees,Distance)
+			// Action = DRIVE_FORWARD DRIVE_BACK STRAFE_RIGHT STRAFE_LEFT ROTATE_RIGHT ROTATE_LEFT CONTROL_LIFT SCORE_SERVO 
+			// LiftAction = LIFT30CM LIFT60CM LIFT90CM LIFT120CM LIFTDOWN NONE(when not used)
+			// Degrees = SCORE_SERVO_OPEN SCORE_SERVO_CLOSE FOREBAR_LINK FOREBAR_LINK_OUT FOREBAR_LINK_IN TOW_SERVO TOW_SERVO_OUT TOW_SERVO_IN NONE(when not used)
+			// Distance = Inches you want to travel(only applies to Drive & Strafe) NONE(when not used)
+			
+			AutonomousAction(STRAFE_LEFT,NONE,NONE,25);
 			AutonomousAction(ROTATE_RIGHT,NONE,90,NONE);
-			uSDrive(6000,50,16);
+			uSDrive(6000,50,16,STRAFE_LEFT);
 			// once at centrer goal structure:
 			InchDrive (DRIVE_BACK,3);
 			AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_IN,NONE,NONE);
 			AutonomousAction(CONTROL_LIFT,LIFT120CM,NONE,NONE);
 			AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_OUT,NONE,NONE);
-			InchDrive (DRIVE_FORWARD,3);
+			InchDrive (DRIVE_FORWARD,3);// TODO: change to uSDrive
 			AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_OPEN,NONE);
 			AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_CLOSE,NONE);
 			InchDrive (DRIVE_BACK,3);
@@ -102,9 +107,41 @@ task main()
 			break;
 		case CENTER_GOAL_P2: //goal position 2
 			displayBigTextLine(1,"CENTER_GOAL_P2");
+			//TODO: drive to CGP 2
+			
+			// once at centrer goal structure:
+			InchDrive (DRIVE_BACK,3);
+			AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_IN,NONE,NONE);
+			AutonomousAction(CONTROL_LIFT,LIFT120CM,NONE,NONE);
+			AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_OUT,NONE,NONE);
+			InchDrive (DRIVE_FORWARD,3);
+			AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_OPEN,NONE);
+			AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_CLOSE,NONE);
+			InchDrive (DRIVE_BACK,3);// TODO: change to uSDrive
+			AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_IN,NONE,NONE);
+			AutonomousAction(CONTROL_LIFT,LIFTDOWN,NONE,NONE);
+			AutonomousAction(STRAFE_RIGHT,NONE,NONE,12);
+			AutonomousAction(ROTATE_LEFT,NONE,90,NONE);
+			AutonomousAction(STRAFE_LEFT,NONE,NONE,24);			
 			break;
 		case CENTER_GOAL_P3:// goal position 3
 			displayBigTextLine(1,"CENTER_GOAL_P3");
+			//TODO: drive to CGP 3
+			
+			// once at centrer goal structure:
+			InchDrive (DRIVE_BACK,3);
+			AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_IN,NONE,NONE);
+			AutonomousAction(CONTROL_LIFT,LIFT120CM,NONE,NONE);
+			AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_OUT,NONE,NONE);
+			InchDrive (DRIVE_FORWARD,3);// TODO: change to uSDrive
+			AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_OPEN,NONE);
+			AutonomousAction(SCORE_SERVO,NONE,SCORE_SERVO_CLOSE,NONE);
+			InchDrive (DRIVE_BACK,3);
+			AutonomousAction(FOREBAR_LINK,FOREBAR_LINK_IN,NONE,NONE);
+			AutonomousAction(CONTROL_LIFT,LIFTDOWN,NONE,NONE);
+			AutonomousAction(STRAFE_RIGHT,NONE,NONE,12);
+			AutonomousAction(ROTATE_LEFT,NONE,90,NONE);
+			AutonomousAction(STRAFE_LEFT,NONE,NONE,24);
 			break;
 	}
 }

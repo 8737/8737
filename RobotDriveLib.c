@@ -26,6 +26,7 @@
 #define LIFT90CM 3
 #define LIFT120CM 4
 #define LIFTDOWN 0
+#define NONE 0
 
 #define CENTER_GOAL_P1 1
 #define CENTER_GOAL_P2 2
@@ -34,7 +35,6 @@
 #define LEFT -1
 #define RIGHT 1
 #define MAX_SPEED 75 // speed limit to protect the motors
-#define NONE 0
 #define IR_THRESHOLD 3
 #define US_CG_MAX_THRESHOLD 150
 #define US_CG_MIN_THRESHOLD 100
@@ -209,6 +209,7 @@ void InchDrive(int Action, int DriveXin)
 }
 void gTurn(int Action, int Degrees)
 {
+	//TODO: increase speed
 	writeDebugStreamLine("STARTING GTURN");
 	float heading = 0;// current heading of gyro
 	time1[T1] = 0;
@@ -279,28 +280,68 @@ int cGPFinder() // center goal position finder
 	writeDebugStreamLine("FINISHED CGP FINDER");
 	return cGPosition;
 }
-float conversion(float x)
+float conversion(float in)
 {
-  return (x*2.540000);
+	// converts inches to centimeters
+	return (in*2.540000);
 }
-int uSDrive(int rTimeMS, int speed, int uSDistIn)
+int uSDrive(int rTimeMS, int speed, int uSDistIn, int direction)
 {
+	// Strafe until the US Distance is met or time-out is reached
+	// rTimeMS = 1000-10000ms max value is 32000
+	// speed = 0-100
+	// uSDistIn = 7-65in NOTE: Lego US may not see objects at 65in
+	// direction = DRIVE_FORWARD DRIVE_BACK STRAFE_RIGHT STRAFE_LEFT
 	writeDebugStreamLine("STARTING USDRIVE");
 	time1[T2] = 0;
 	int uSDistCm = conversion(uSDistIn);
 	int uSCDist = USreadDist(LEGOUS);
 	writeDebugStreamLine("RUNNING MOTORS");
-	while((time1[T2] < rTimeMS) && ( uSCDist >= uSDistCm ))
+	switch (direction)
 	{
-	DriveStrafe(speed);
-	uSCDist = USreadDist(LEGOUS);
+	case DRIVE_FORWARD:
+		while((time1[T2] < rTimeMS) && ( uSCDist >= uSDistCm ))
+		{
+		DriveBackForward(speed);
+		uSCDist = USreadDist(LEGOUS);
+		}
+		break;
+	case DRIVE_BACK:
+		while((time1[T2] < rTimeMS) && ( uSCDist >= uSDistCm ))
+		{
+		DriveBackForward(-speed);
+		uSCDist = USreadDist(LEGOUS);
+		}
+		break;
+	case STRAFE_RIGHT:
+		while((time1[T2] < rTimeMS) && ( uSCDist >= uSDistCm ))
+		{
+		DriveStrafe(speed);
+		uSCDist = USreadDist(LEGOUS);
+		}
+		break;
+	case STRAFE_LEFT:
+		while((time1[T2] < rTimeMS) && ( uSCDist >= uSDistCm ))
+		{
+		DriveStrafe(-speed);
+		uSCDist = USreadDist(LEGOUS);
+		}
+		break;
+
+	default:
+		break;
 	}
-	DriveStrafe(0);
+	DriveStop();
 	writeDebugStreamLine("FINISHED USDRIVE");
 	return uSCDist;
 }
  void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
 {
+	// AutonomousAction(Action,LiftAction,Degrees,Distance)
+	// Action = DRIVE_FORWARD DRIVE_BACK STRAFE_RIGHT STRAFE_LEFT ROTATE_RIGHT ROTATE_LEFT CONTROL_LIFT SCORE_SERVO 
+	// LiftAction = LIFT30CM LIFT60CM LIFT90CM LIFT120CM LIFTDOWN NONE(when not used)
+	// Degrees = SCORE_SERVO_OPEN SCORE_SERVO_CLOSE FOREBAR_LINK FOREBAR_LINK_OUT FOREBAR_LINK_IN TOW_SERVO TOW_SERVO_OUT TOW_SERVO_IN NONE(when not used)
+	// Distance = Inches you want to travel(only applies to Drive & Strafe) NONE(when not used)
 	writeDebugStreamLine("STARTING AUTONOMOUSACTION");
 	writeDebugStreamLine("Action: %d",Action);
 	writeDebugStreamLine("LiftAction %d",LiftAction);
@@ -419,16 +460,16 @@ void initializeRobot()
 	{
 		displayTextLine(0, "SMUX Batt: good");
 	}
-	displayTextLine(0,"Initialising...");
+	// displayTextLine(0,"Initialising...");
 	writeDebugStreamLine("SETTING SERVOS TO DOWN POSITION");
 	nMotorEncoder[LiftA] = 0;
 	servo[up] = SCORE_SERVO_CLOSE;
 	servo[forebarlink] = FOREBAR_LINK_IN;
 	servo[Tow] = TOW_SERVO_IN;
-	sleep(1500);
 	writeDebugStreamLine("CALIBRATING AND INITALISING SENSORS");
 	initSensor(&irSeeker, msensor_S3_2);
 	HTGYROstartCal(HTGYRO);
+	sleep(1500);
 	writeDebugStreamLine("FINISHED INITALISING");
 	return;
 }
