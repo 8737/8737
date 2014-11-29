@@ -73,46 +73,52 @@ void DriveStrafe(int speed)//moves side to side positive is right negative is le
 }
 void Lift(int speed)
 {
+	writeDebugStreamLine("LIFTING");
 	motor[LiftA]=speed;
 	motor[LiftB]=speed;
 }
 void Lift30cm()// 8000 encoder difference between each height
 {
+	writeDebugStreamLine("LIFT30CM");
 	while(nMotorEncoder[LiftA] > -6800)
 	{
-		Lift(-25);
+		Lift(-75);
 	}
 	Lift(0);
 }
 void Lift60cm()
 {
+	writeDebugStreamLine("LIFT60CM");
 	while(nMotorEncoder[LiftA] > -14800)
 	{
-		Lift(-25);
+		Lift(-75);
 	}
 	Lift(0);
 }
 void Lift90cm()
 {
+	writeDebugStreamLine("LIFT90CM");
 	while(nMotorEncoder[LiftA] > -22800)
 	{
-		Lift(-25);
+		Lift(-75);
 	}
 	Lift(0);
 }
 void Lift120cm()
 {
+	writeDebugStreamLine("LIFT120CM");
 	while(nMotorEncoder[LiftA] > -30800)
 	{
-		Lift(-25);
+		Lift(-75);
 	}
 	Lift(0);
 }
 void LiftDown()
 {
+	writeDebugStreamLine("LIFTDOWN");
 	while(nMotorEncoder[LiftA] < 0)
 	{
-		Lift(25);
+		Lift(75);
 	}
 	Lift(0);
 }
@@ -139,13 +145,13 @@ void InchDrive(int Action, int DriveXin)
 
 	if(DriveXin >= Brake1)
 	{
-		writeDebugStreamLine("CHECK1");
+		writeDebugStreamLine("BREAK1");
 		if (DriveXin >= Brake2)
 		{
-			writeDebugStreamLine("CHECK2");
+			writeDebugStreamLine("BREAK2");
 			if(DriveXin >= Brake3)
 			{
-				writeDebugStreamLine("CHECK3");
+				writeDebugStreamLine("BREAK3");
 				MotorRunTime = Brake1 * Brake1MS;
 				DriveXin -= Brake1;
 				MotorRunTime += (Brake2 - Brake1) * Brake2MS;
@@ -203,6 +209,7 @@ void InchDrive(int Action, int DriveXin)
 }
 void gTurn(int Action, int Degrees)
 {
+	writeDebugStreamLine("STARTING GTURN");
 	float heading = 0;// current heading of gyro
 	time1[T1] = 0;
 	int offset = 13;
@@ -268,7 +275,7 @@ int cGPFinder() // center goal position finder
 	// if IR = S3 and US is > 150 cm the cGPosition = 2
 	// if IR = S3 and US is = ~130 cm the cGPosition = 3
 	// IR threshold = 2
-	// US max range = 150 cm
+	// US max range = ~150 cm
 	writeDebugStreamLine("FINISHED CGP FINDER");
 	return cGPosition;
 }
@@ -278,20 +285,23 @@ float conversion(float x)
 }
 int uSDrive(int rTimeMS, int speed, int uSDistIn)
 {
+	writeDebugStreamLine("STARTING USDRIVE");
 	time1[T2] = 0;
 	int uSDistCm = conversion(uSDistIn);
 	int uSCDist = USreadDist(LEGOUS);
-
+	writeDebugStreamLine("RUNNING MOTORS");
 	while((time1[T2] < rTimeMS) && ( uSCDist >= uSDistCm ))
 	{
 	DriveStrafe(speed);
 	uSCDist = USreadDist(LEGOUS);
 	}
 	DriveStrafe(0);
+	writeDebugStreamLine("FINISHED USDRIVE");
 	return uSCDist;
 }
  void AutonomousAction(int Action, int LiftAction, int Degrees,int Distance)
 {
+	writeDebugStreamLine("STARTING AUTONOMOUSACTION");
 	writeDebugStreamLine("Action: %d",Action);
 	writeDebugStreamLine("LiftAction %d",LiftAction);
 	writeDebugStreamLine("Degrees: %d",Degrees);
@@ -302,7 +312,7 @@ int uSDrive(int rTimeMS, int speed, int uSDistIn)
 	case DRIVE_BACK:
 	case STRAFE_RIGHT:
 	case STRAFE_LEFT:
-		displayTextLine(5,"Driving");
+		writeDebugStreamLine("Driving");
 		playSound(soundBlip);
 		while(bSoundActive) sleep(1);
 		playSound(soundBlip);
@@ -315,7 +325,7 @@ int uSDrive(int rTimeMS, int speed, int uSDistIn)
 		break;
 	case ROTATE_RIGHT:
 	case ROTATE_LEFT:
-		displayTextLine(5,"Turning");
+		writeDebugStreamLine("Turning");
 		playSound(soundBlip);
 		while(bSoundActive) sleep(1);
 		playSound(soundBlip);
@@ -327,7 +337,7 @@ int uSDrive(int rTimeMS, int speed, int uSDistIn)
 		while(bSoundActive) sleep(1);
 		break;
 	case CONTROL_LIFT:
-		displayTextLine(5,"Lifting");
+		writeDebugStreamLine("Lifting");
 		sleep(1500);
 		playSound(soundBlip);
 		while(bSoundActive) sleep(1);
@@ -358,6 +368,7 @@ int uSDrive(int rTimeMS, int speed, int uSDistIn)
 		playSound(soundBlip);
 		while(bSoundActive) sleep(1);
 	case SCORE_SERVO:
+		writeDebugStreamLine("SCORE SERVO");
 		while(bSoundActive) sleep(1);
 		playSound(soundBlip);
 		while(bSoundActive) sleep(1);
@@ -368,7 +379,8 @@ int uSDrive(int rTimeMS, int speed, int uSDistIn)
 		while(bSoundActive) sleep(1);
 		playSound(soundBlip);
 	case FOREBAR_LINK:
-	while(bSoundActive) sleep(1);
+		writeDebugStreamLine("FOREBAR LINK");
+		while(bSoundActive) sleep(1);
 		playSound(soundBlip);
 		while(bSoundActive) sleep(1);
 		playSound(soundBlip);
@@ -378,7 +390,8 @@ int uSDrive(int rTimeMS, int speed, int uSDistIn)
 		while(bSoundActive) sleep(1);
 		playSound(soundBlip);
 	case TOW_SERVO:
-	while(bSoundActive) sleep(1);
+		writeDebugStreamLine("TOW SERVO");
+		while(bSoundActive) sleep(1);
 		playSound(soundBlip);
 		while(bSoundActive) sleep(1);
 		playSound(soundBlip);
@@ -390,12 +403,10 @@ int uSDrive(int rTimeMS, int speed, int uSDistIn)
 	default:
 		break;
 	}
-	writeDebugStreamLine("ScoreOpenClose: %d",ServoValue[up]);
-	writeDebugStreamLine("forebarlink: %d",ServoValue[forebarlink]);
-	writeDebugStreamLine("Tow: %d",ServoValue[Tow]);
 }
 void initializeRobot()
 {
+	writeDebugStreamLine("INITALISING");
 	if (HTSMUXreadPowerStatus(HTSMUX))
 	{
 		displayTextLine(0, "SMUX Batt: bad");
@@ -409,11 +420,15 @@ void initializeRobot()
 		displayTextLine(0, "SMUX Batt: good");
 	}
 	displayTextLine(0,"Initialising...");
+	writeDebugStreamLine("SETTING SERVOS TO DOWN POSITION");
 	nMotorEncoder[LiftA] = 0;
 	servo[up] = SCORE_SERVO_CLOSE;
 	servo[forebarlink] = FOREBAR_LINK_IN;
 	servo[Tow] = TOW_SERVO_IN;
+	sleep(1500);
+	writeDebugStreamLine("CALIBRATING AND INITALISING SENSORS");
 	initSensor(&irSeeker, msensor_S3_2);
 	HTGYROstartCal(HTGYRO);
+	writeDebugStreamLine("FINISHED INITALISING");
 	return;
 }

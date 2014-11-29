@@ -79,7 +79,7 @@ task main()
 	writeDebugStreamLine("cGPosition: %d",cGPosition);
 	switch(cGPosition)
 	{
-		case CENTER_GOAL_P1: // goal position 1
+		case CENTER_GOAL_P1: // goal position
 			displayBigTextLine(1,"CENTER_GOAL_P1");
 
 			AutonomousAction(STRAFE_LEFT,NONE,NONE,25);// AutonomousAction(Action,LiftAction,Degrees,Distance)
