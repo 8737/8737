@@ -69,7 +69,6 @@
 // At the end of the autonomous period, the FMS will automatically abort (stop) execution of the program.
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-
 task main()
 {
 	initializeRobot();
