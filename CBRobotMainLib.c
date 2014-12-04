@@ -1,6 +1,3 @@
-
-
-
 // scaleJoystick
 // Function to scale a joystick value using a logarithmic like scale with a dead
 // band at zero.
@@ -15,9 +12,9 @@
 // a "logarithmic" scale to the joystick settings.
 // Addapted from RobotC.net forum post by Emilhem
 
-int CBMap(int Joy1, bool FastMode)
+int CBMap(int Joy1, bool FastMode)//scales speed from fast to slow using turbo button.
 {
-	static const int LogScaleFast[17] =
+	static const int LogScaleFast[17] =//speeds for when turbo button is pressed
 	{
 		0,
 		12,
@@ -38,7 +35,7 @@ int CBMap(int Joy1, bool FastMode)
 		95
 
 	};
-	static const int LogScaleSlow[17] =
+	static const int LogScaleSlow[17] =//speed for when turbo button is not pressed
 	{
 		0,
 		7,
@@ -78,7 +75,7 @@ int CBMap(int Joy1, bool FastMode)
 	return Scaled;
 }
 
-task CBDrive()
+task CBDrive()//drive function
 {
 	while(true)
 	{
@@ -93,6 +90,7 @@ task CBDrive()
 		int BR =  y + x - r;
 		int BL = -y + x - r;
 
+		//set motor values
 		motor[FrontLeft] = FL;
 		motor[FrontRight] = FR;
 		motor[BackRight] = BR;
