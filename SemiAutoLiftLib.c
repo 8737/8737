@@ -3,6 +3,7 @@ long FloorHeight [5] = {0, 6085, 14425, 22360, 30000};
 int LiftEncGap = 55; // +/- 2mm accuracy
 const int LiftEncPerCM = 245;
 
+bool ForceScoreOpen=false;
 bool FourBarDeployed=false;
 int DesiredFloor = -1;
 const int MaxAutoLiftSpeed=85;
@@ -281,7 +282,7 @@ task LiftTeleOP()
 		}
 		else
 		{
-			SetScoreOpen(RB_Button_isHeld(ButtonState, 2));//button A
+			SetScoreOpen(RB_Button_isHeld(ButtonState, 2) || ForceScoreOpen);//button A
 		}
 
 		wait1Msec(10);
