@@ -197,7 +197,7 @@ void InchDrive(int Action, int DriveXin)
 }
 int cGFinder() // center goal finder
 {
-	writeDebugStreamLine("STARTING CGP FINDER");
+	//writeDebugStreamLine("STARTING CGP FINDER"); Test 2
 	int cGPosition = 0;
 	//writeDebugStreamLine("READING US");
 	int USValue = SensorValue(sonarSensor);
@@ -209,16 +209,17 @@ int cGFinder() // center goal finder
 	//If GP = 2, IR = 10, US = ~155cm
 	//If GP = 1, IR >= 15, US = ~45cm
 
-	//if(IRValue >= 7 && USValue < 36)
-	if(USValue < 36)
+	//if(IRValue >= 7 && USValue	 < 36)
+	if(USValue < 40)
 	{
 		cGPosition = 1;
 	}
-	writeDebugStreamLine("FINISHED CGP FINDER");
+	//writeDebugStreamLine("FINISHED CGP FINDER"); Test 2
 	return cGPosition;
 }
 task main()
 {
+	writeDebugStreamLine("Starting Program");
 	// robot starts right side of robot touching wall
 	initializeRobot();
 	startTask(LiftTeleOP);
@@ -227,30 +228,38 @@ task main()
 	// irSeeker.acValues[2]
 	motor[FrontLeft]=75;
 	motor[BackRight]=-75;
+	//sleep(2800); Good test
 	sleep(2600);
 	motor[FrontRight]=75;
 	motor[FrontLeft]=75;
 	motor[BackRight]=-75;
 	sleep(25);
 	motor[BackLeft]=-75;
-	sleep(1000);
+	//sleep(1100); Good test
+	sleep(1100);
 	motor[FrontRight]=0;
 	motor[FrontLeft]=0;
 	motor[BackRight]=0;
 	motor[BackLeft]=0;
-	sleep(250);
+	sleep(500);
 	int CGFound = cGFinder();
 	time1[T1]=0;
 	int pings = 0;
 	while((time1[T1] <= 3000) && (CGFound == 0))
 	{
-		motor[FrontRight]=-17;
+		//Test 1
+		//motor[FrontRight]=-17;
+		//motor[FrontLeft]=-17;
+		//motor[BackRight]=53;
+		//motor[BackLeft]=53;
+		motor[FrontRight]=-21;
 		motor[FrontLeft]=-17;
 		motor[BackRight]=53;
-		motor[BackLeft]=53;
+		motor[BackLeft]=51;
 		CGFound = cGFinder();
 		pings++;
 	}
+	sleep(100);
 	motor[FrontRight]=0;
 	motor[FrontLeft]=0;
 	motor[BackRight]=0;
@@ -259,25 +268,59 @@ task main()
 	// Begin scoring
 	if (CGFound == 1)
 	{
-		InchDrive(DRIVE_BACK,4);
+		//InchDrive(DRIVE_BACK,6);
+		//us drive back till 13in
+		int USValue = SensorValue(sonarSensor);
+		while (USValue < 33)
+		{
+			motor[FrontRight]=-25;
+			motor[FrontLeft]=25;
+			motor[BackRight]=-25;
+			motor[BackLeft]=25;
+			USValue = SensorValue(sonarSensor);
+			writeDebugStreamLine("Back %d",USValue);
+			sleep(10);
+		}
+		motor[FrontRight]=0;
+		motor[FrontLeft]=0;
+		motor[BackRight]=0;
+		motor[BackLeft]=0;
 		DesiredFloor = 4;
 
 		while(GetLiftEnc() <  (FloorHeight[DesiredFloor]- LiftEncGap))
 		{
-			writeDebugStreamLine("GetLiftEnc:%d", GetLiftEnc() );
+			//writeDebugStreamLine("GetLiftEnc:%d", GetLiftEnc() );
 			sleep(100);
 		}
 		sleep(250);
-		InchDrive(DRIVE_FORWARD, 5);
-		sleep(50);
+		//InchDrive(DRIVE_FORWARD, 8);
+		//us drive forward till 8in
+		USValue = SensorValue(sonarSensor);
+		while (USValue > 26)
+		{
+			motor[FrontRight]=25;
+			motor[FrontLeft]=-25;
+			motor[BackRight]=25;
+			motor[BackLeft]=-25;
+			USValue = SensorValue(sonarSensor);
+			writeDebugStreamLine("Forward %d",USValue);
+			sleep(10);
+		}
+		motor[FrontRight]=0;
+		motor[FrontLeft]=0;
+		motor[BackRight]=0;
+		motor[BackLeft]=0;
+
+		sleep(100);
 		servo[BallRelease] = 90;
-		sleep(1000);
+		sleep(5000);
 		servo[BallRelease] = 0;
-		InchDrive(DRIVE_BACK, 5);
+		InchDrive(DRIVE_BACK, 8);
 		DesiredFloor = 0;
 	}
 	else
 	{
+		writeDebugStreamLine("CG Not Found");
 		DesiredFloor = 0;
 	}
 	//displayBigTextLine(0, "# of pings:%d", pings);
