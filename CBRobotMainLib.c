@@ -17,10 +17,30 @@ a "logarithmic" scale to the joystick settings.
 Addapted from RobotC.net forum post by Emilhem
 */
 
-bool FastButton = true;
+bool FastButton = false;
 int CBMap(int Joy1, bool FastMode)
 {
 	static const int LogScaleFast[17] =
+	{
+		0,
+		12,
+		12,
+		12,
+		12,
+		13,
+		15,
+		18,
+		22,
+		27,
+		34,
+		42,
+		52,
+		64,
+		78,
+		95,
+		95
+	};
+	static const int LogScaleSlow[17] =
 	{
 		0,
 		7,
@@ -39,28 +59,6 @@ int CBMap(int Joy1, bool FastMode)
 		17,
 		20,
 		20
-	};
-	static const int LogScaleSlow[17] =
-	{
-
-		0,
-		12,
-		12,
-		12,
-		12,
-		13,
-		15,
-		18,
-		22,
-		27,
-		34,
-		42,
-		52,
-		64,
-		78,
-		95,
-		95
-
 	};
 	int Scaled = Joy1/8;
 	if (FastMode && GetLiftEnc() < AutoDeployEncTop)
