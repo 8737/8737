@@ -61,7 +61,7 @@ int CBMap(int Joy1, bool FastMode)
 		20
 	};
 	int Scaled = Joy1/8;
-	if (FastMode && GetLiftEnc() < AutoDeployEncTop)
+	if (FastMode && GetLiftEnc() < 15000) // Not beyond 2nd goal
 	{
 		if (Scaled >= 0)
 			Scaled = LogScaleFast[Scaled];
