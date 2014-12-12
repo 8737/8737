@@ -22,16 +22,7 @@
 #define STRAFE_LEFT 3
 #define ROTATE_RIGHT 4
 #define ROTATE_LEFT 5
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-//                           Autonomous Mode Code Template
-//
-// This file contains a template for simplified creation of an autonomous program for an TETRIX robot
-// competition.
-//
-// You need to customize two functions with code unique to your specific robot.
-//
-/////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #include "RBButtonLib.h";
 #include "JoystickDriver.c";  //Include file to "handle" the Bluetooth messages.
 RB_Button_State ButtonState;
@@ -41,22 +32,8 @@ RB_Button_State ButtonState;
 // Create struct to hold sensor data
 tHTIRS2 irSeeker;
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-//                                    initializeRobot
-//
-// Prior to the start of autonomous mode, you may want to perform some initialization on your robot.
-// Things that might be performed during initialization include:
-//   1. Move motors and servos to a preset position.
-//   2. Some sensor types take a short while to reach stable values during which time it is best that
-//      robot is not moving. For example, gyro sensor needs a few seconds to obtain the background
-//      "bias" value.
-//
-// In many cases, you may not have to add any code to this function and it will remain "empty".
-//
-/////////////////////////////////////////////////////////////////////////////////////////////////////
 const int NXTMinimumBatteryLevel = 6300;
-const int TETRIXMinimumBatteryLevel = 13000;
+const int TETRIXMinimumBatteryLevel = 13100;//voltage should be no higher than 13.5 or the results will be unperdictable.
 int HZb = 950;
 
 void DOT()
@@ -84,8 +61,8 @@ void initializeRobot()
 	int IRValue = irSeeker.acValues[2];
 	int USValue = SensorValue(sonarSensor);
 	servo[BallRelease] = -80;
-	servo[FourBarLink] = 185;
-	servo[KickStand] =0;
+	FourBarDeployed=false;
+	servo[KickStand] =70;
 	servo[Tow] = 70;
 	if (! SensorValue[LiftDownTouch] || externalBatteryAvg <= TETRIXMinimumBatteryLevel || nImmediateBatteryLevel <= NXTMinimumBatteryLevel)//if NOT bottom button is pressed warn driver to go down
 	{
@@ -108,27 +85,6 @@ void initializeRobot()
 	}
 }
 
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-//                                         Main Task
-//
-// The following is the main code for the autonomous robot operation. Customize as appropriate for
-// your specific robot.
-//
-// The types of things you might do during the autonomous phase (for the 2001-2 FTC competition)
-// are:
-//
-//   1. Have the robot follow a line on the game field until it reaches one of the puck storage
-//      areas.
-//   2. Load pucks into the robot from the storage bin.
-//   3. Stop the robot and wait for autonomous phase to end.
-//
-// This simple template does nothing except play a periodic tone every few seconds.
-//
-// At the end of the autonomous period, the FMS will autonmatically abort (stop) execution of the program.
-//
-////////////////////////////////////////////////////////////////////////////////////////////////////
 void InchDrive(int Action, int DriveXin)
 {
 	writeDebugStreamLine("STARTING INCHDRIVE");
@@ -256,23 +212,24 @@ int cGFinder() // center goal finder
 }
 task main()
 {
+
 	writeDebugStreamLine("Starting Program");
 	// robot starts right side of robot touching wall
 	initializeRobot();
 	waitForStart();
 	startTask(LiftTeleOP);
+	startTask(KickStandTeleOP);
 	DesiredFloor = 2;// take to 60cm height
-	// sonarValue = SensorValue(sonarSensor);
-	// irSeeker.acValues[2]
 	motor[FrontLeft]=75;
 	motor[BackRight]=-75;
-	// sleep(2600); GOOD TEST
 	sleep(2575);
+	FourBarDeployed = false;
 	motor[FrontRight]=75;
 	motor[FrontLeft]=75;
 	motor[BackRight]=-75;
 	sleep(50);
 	motor[BackLeft]=-75;
+	FourBarDeployed = false;
 	sleep(1100);
 	motor[FrontRight]=0;
 	motor[FrontLeft]=0;
@@ -317,6 +274,7 @@ task main()
 		motor[FrontLeft]=0;
 		motor[BackRight]=0;
 		motor[BackLeft]=0;
+		FourBarDeployed = true;
 		DesiredFloor = 4;
 
 		while(GetLiftEnc() <  (FloorHeight[DesiredFloor]- LiftEncGap))
@@ -343,39 +301,60 @@ task main()
 		motor[BackRight]=0;
 		motor[BackLeft]=0;
 		sleep(100);
-		motor[FrontRight]=25;
-		motor[FrontLeft]=25;
-		motor[BackRight]=25;
-		motor[BackLeft]=25;
-		sleep(100);
-		motor[FrontRight]=-25;
-		motor[FrontLeft]=-25;
-		motor[BackRight]=-25;
-		motor[BackLeft]=-25;
-		sleep(100);
-		motor[FrontRight]=25;
-		motor[FrontLeft]=25;
-		motor[BackRight]=25;
-		motor[BackLeft]=25;
-		sleep(100);
-		motor[FrontRight]=-25;
-		motor[FrontLeft]=-25;
-		motor[BackRight]=-25;
-		motor[BackLeft]=-25;
-		sleep(100);
 		ForceScoreOpen = true;
+		motor[FrontRight]=25;
+		motor[FrontLeft]=25;
+		motor[BackRight]=25;
+		motor[BackLeft]=25;
+		sleep(100);
+		motor[FrontRight]=-25;
+		motor[FrontLeft]=-25;
+		motor[BackRight]=-25;
+		motor[BackLeft]=-25;
+		sleep(100);
+		motor[FrontRight]=25;
+		motor[FrontLeft]=25;
+		motor[BackRight]=25;
+		motor[BackLeft]=25;
+		sleep(100);
+		motor[FrontRight]=-25;
+		motor[FrontLeft]=-25;
+		motor[BackRight]=-25;
+		motor[BackLeft]=-25;
+		sleep(100);
+		motor[FrontRight]=0;
+		motor[FrontLeft]=0;
+		motor[BackRight]=0;
+		motor[BackLeft]=0;
 		sleep(1000);
-
 		ForceScoreOpen = false;
 		InchDrive(DRIVE_BACK, 8);
+		InchDrive(STRAFE_RIGHT, 22);
+		motor[FrontRight]=-25;
+		motor[FrontLeft]=-25;
+		motor[BackRight]=-25;
+		motor[BackLeft]=-25;
 		DesiredFloor = 0;
+		sleep(500);
+		motor[FrontRight]=0;
+		motor[FrontLeft]=0;
+		motor[BackRight]=0;
+		motor[BackLeft]=0;
+		sleep(3000);
+		KickStandDown = true;
+		motor[BackLeft]=-95;
+		motor[FrontRight]=95;
+		sleep(2000);
+		motor[FrontRight]=0;
+		motor[FrontLeft]=0;
+		motor[BackRight]=0;
+		motor[BackLeft]=0;
 	}
 	else
 	{
 		writeDebugStreamLine("CG Not Found");
 		DesiredFloor = 0;
 	}
-	//displayBigTextLine(0, "# of pings:%d", pings);
 	writeDebugStreamLine("# of pings:%d", pings );
 	while (true)
 	{}

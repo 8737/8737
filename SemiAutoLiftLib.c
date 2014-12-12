@@ -3,6 +3,7 @@ long FloorHeight [5] = {0, 6085, 14425, 22360, 30000};
 int LiftEncGap = 55; // +/- 2mm accuracy
 const int LiftEncPerCM = 245;
 
+bool KickStandDown = false;
 bool ForceScoreOpen=false;
 bool FourBarDeployed=false;
 int DesiredFloor = -1;
@@ -77,7 +78,6 @@ task TowMechTeleOP()
 
 task KickStandTeleOP()
 {
-	bool KickStandDown = false;
 	while(true)
 	{
 		if(RB_Button_wasPressed(ButtonState, 9))// toggle on button "BACK"
