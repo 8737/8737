@@ -5,6 +5,7 @@ const int LiftEncPerCM = 245;
 
 bool KickStandDown = false;
 bool ForceScoreOpen=false;
+bool ForceForebarHigh=false;
 bool FourBarDeployed=false;
 int DesiredFloor = -1;
 const int MaxAutoLiftSpeed=85;
@@ -38,13 +39,27 @@ void ClearLiftEnc()
 
 void SetFourBar(bool Deploy)
 {
-	if (Deploy)
+	if (! ForceForebarHigh)
 	{
-		servo[FourBarLink]=-90;
+		if (Deploy)
+		{
+			servo[FourBarLink]=70;
+		}
+		else
+		{
+			servo[FourBarLink]=300;
+		}
 	}
 	else
 	{
-		servo[FourBarLink]=185;
+		if (Deploy)
+		{
+			servo[FourBarLink]=0;
+		}
+		else
+		{
+			servo[FourBarLink]=300;
+		}
 	}
 }
 
