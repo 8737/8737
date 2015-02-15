@@ -48,17 +48,18 @@ int CBMap(int Joy1, bool FastMode)
 		7,
 		7,
 		7,
-		7,
-		8,
 		8,
 		9,
 		10,
-		11,
-		13,
-		15,
+		12,
+		14,
 		17,
 		20,
-		20
+		24,
+		29,
+		35,
+		35
+
 	};
 	int Scaled = Joy1/8;
 	if (FastMode && GetLiftEnc() < 15000) // Not beyond 2nd goal

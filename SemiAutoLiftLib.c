@@ -1,5 +1,5 @@
-long TopLiftLimit =  30300;
-long FloorHeight [5] = {0, 6085, 14425, 22360, 30000};
+long TopLiftLimit =  15151;
+long FloorHeight [5] = {0, 2100, 6400, 10300, 14350};
 int LiftEncGap = 55; // +/- 2mm accuracy
 const int LiftEncPerCM = 245;
 
@@ -10,8 +10,8 @@ int DesiredFloor = -1;
 const int MaxAutoLiftSpeed=85;
 const int MinAutoLiftSpeed=15;
 const int ManualLiftSpeed=50;
-const int AutoDeployEncTop=5000;
-const int AutoDeployEncBottom=4500;
+const int AutoDeployEncTop=1650;
+const int AutoDeployEncBottom=1550;
 
 int CaptureState = -1;
 
@@ -42,11 +42,11 @@ void SetFourBar(bool Deploy)
 	{
 		if (Deploy)
 		{
-			servo[FourBarLink]=70;
+			servo[FourBarLink]=0;
 		}
 		else
 		{
-			servo[FourBarLink]=300;
+			servo[FourBarLink]=255;
 		}
 	}
 	else
@@ -133,7 +133,7 @@ void SemiAutoBallCapture(long Enc)
 		}
 		else break;
 
-	case 3: //dropp to ground
+	case 3: //drop to ground
 		SetLiftSpeed(-MaxAutoLiftSpeed/2);
 		if (Enc <= 0)
 		{
